@@ -62,3 +62,20 @@ test('foodArt returns low-poly comic svg markup without emoji art', () => {
   assert.match(art, /LOW POLY/);
   assert.doesNotMatch(art, /🍜|🥘|🍚|🥟|🍲|🥗|🍛|🔥|🥢|🍖|🦀|🍗/);
 });
+
+test('foodArt uses recognizable food-specific silhouettes', () => {
+  const cases = [
+    ['牛肉面', 'noodle'],
+    ['扬州炒饭', 'rice'],
+    ['水饺', 'dumpling'],
+    ['清蒸鲈鱼', 'fish'],
+    ['火锅', 'hotpot'],
+    ['烧烤', 'skewer'],
+    ['红烧肉', 'meat'],
+    ['麻婆豆腐', 'tofu'],
+  ];
+
+  for (const [name, kind] of cases) {
+    assert.match(foodArt({ id: 1, name, rarity: 'R', calories: 500, health: 50, sugarSafe: false }), new RegExp(`data-food-kind="${kind}"`));
+  }
+});

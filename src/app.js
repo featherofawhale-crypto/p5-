@@ -13,6 +13,12 @@ const BGM = [
   { name: 'Last Surprise', src: 'assets/last_surprise.m4a' },
   { name: 'Wake Up Get Up Get', src: 'assets/wake_up_get_up.m4a' },
 ];
+const SFX_ASSETS = {
+  click: 'assets/sfx/click.wav',
+  tick: 'assets/sfx/tick.wav',
+  warning: 'assets/sfx/warning.wav',
+  reveal: 'assets/sfx/reveal.wav',
+};
 const $ = (id) => document.getElementById(id);
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -21,6 +27,7 @@ let spinning = false;
 let bgmIndex = 0;
 let muted = false;
 let ctx;
+const sampleCache = new Map();
 
 const bgm = $('bgm');
 bgm.volume = 0.18;
@@ -75,14 +82,27 @@ function noise(dur = 0.14, gain = 0.045) {
   src.start();
 }
 
+function playSample(name, volume = 0.32) {
+  if (muted || !SFX_ASSETS[name]) return;
+  let audio = sampleCache.get(name);
+  if (!audio) {
+    audio = new Audio(SFX_ASSETS[name]);
+    audio.preload = 'auto';
+    sampleCache.set(name, audio);
+  }
+  const instance = audio.cloneNode();
+  instance.volume = volume;
+  instance.play().catch(() => {});
+}
+
 const sfx = {
-  click() { tone(920, 0.05, 'square', 0.03, 360); },
-  tick(i) { tone(420 + i * 14, 0.04, 'square', 0.028); },
+  click() { playSample('click', 0.34); tone(920, 0.05, 'square', 0.025, 360); },
+  tick(i) { playSample('tick', 0.18); tone(420 + i * 14, 0.035, 'square', 0.016); },
   whoosh() { noise(0.28, 0.07); tone(120, 0.24, 'sawtooth', 0.035, 980); },
-  warning() { tone(90, 0.32, 'sawtooth', 0.065, -28); setTimeout(() => tone(980, 0.11, 'square', 0.035), 120); },
+  warning() { playSample('warning', 0.42); tone(90, 0.32, 'sawtooth', 0.05, -28); setTimeout(() => tone(980, 0.11, 'square', 0.026), 120); },
   slash() { noise(0.12, 0.09); tone(1320, 0.09, 'sawtooth', 0.04, 680); },
   lock() { tone(120, 0.08, 'square', 0.06); setTimeout(() => tone(70, 0.18, 'sawtooth', 0.07), 80); },
-  boom() { noise(0.5, 0.13); tone(58, 0.42, 'sawtooth', 0.13, -18); setTimeout(() => tone(1500, 0.1, 'triangle', 0.04, 480), 80); },
+  boom() { playSample('reveal', 0.52); noise(0.5, 0.1); tone(58, 0.42, 'sawtooth', 0.1, -18); setTimeout(() => tone(1500, 0.1, 'triangle', 0.035, 480), 80); },
   shine() { [1500, 1900, 2400].forEach((f, i) => setTimeout(() => tone(f, 0.08, 'sine', 0.026), i * 70)); },
 };
 
@@ -280,5 +300,5 @@ function wireEvents() {
 initBackground();
 wireEvents();
 renderAdmin();
-drawReels([foods[5], foods[18], foods[77]]);
+drawReels([foods[20], foods[43], foods[8]]);
 drawResult(foods[0]);

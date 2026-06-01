@@ -33,6 +33,12 @@
     { name: 'Last Surprise', src: 'assets/last_surprise.m4a' },
     { name: 'Wake Up Get Up Get', src: 'assets/wake_up_get_up.m4a' },
   ];
+  const SFX_ASSETS = {
+    click: 'assets/sfx/click.wav',
+    tick: 'assets/sfx/tick.wav',
+    warning: 'assets/sfx/warning.wav',
+    reveal: 'assets/sfx/reveal.wav',
+  };
   const $ = (id) => document.getElementById(id);
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -60,6 +66,83 @@
       health: clamp(input?.health ?? 60, 1, 99),
       sugarSafe: input?.sugarSafe === true || input?.sugarSafe === 'true' || input?.sugarSafe === 'on',
     };
+  }
+  function classifyFood(name) {
+    if (/面|粉|米线|河粉|拉面|热干|担担|云吞/.test(name)) return 'noodle';
+    if (/饭|粥|煲仔|卤肉|炒饭|便当|碗/.test(name)) return 'rice';
+    if (/饺|包|烧麦|锅贴|肠粉|肉夹馍|饼/.test(name)) return 'dumpling';
+    if (/鱼|鲈|三文|海鲜|虾|蟹|龙虾|刺身|鳗/.test(name)) return 'fish';
+    if (/火锅|汤|锅|麻辣烫|冒菜|羹|佛跳墙/.test(name)) return 'hotpot';
+    if (/烧烤|烤|串|羊肉|牛排|和牛|鸡腿|鸡翅/.test(name)) return 'skewer';
+    if (/豆腐|豆皮|豆干/.test(name)) return 'tofu';
+    if (/肉|鸡|牛|羊|猪|排|鸭|叉烧|里脊|扣肉|黄焖/.test(name)) return 'meat';
+    if (/沙拉|西兰花|牛油果|时蔬/.test(name)) return 'salad';
+    return 'plate';
+  }
+  function foodShape(kind, colors) {
+    if (kind === 'noodle') {
+      return `<ellipse cx="80" cy="98" rx="48" ry="25" fill="#fff3c4" stroke="#111" stroke-width="6"/>
+        <path d="M38 82 C58 61,92 108,122 78" fill="none" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+        <path d="M42 91 C64 72,92 112,120 88" fill="none" stroke="${colors[0]}" stroke-width="8" stroke-linecap="round"/>
+        <polygon points="112,40 125,45 57,109 45,104" fill="#2b160d" stroke="#111" stroke-width="3"/>
+        <polygon points="121,51 134,56 67,120 55,115" fill="#2b160d" stroke="#111" stroke-width="3"/>`;
+    }
+    if (kind === 'rice') {
+      return `<polygon points="36,78 124,78 108,125 52,125" fill="#2b2d42" stroke="#111" stroke-width="6"/>
+        <polygon points="45,56 73,38 115,61 124,82 36,82" fill="#ffffff" stroke="#111" stroke-width="5"/>
+        <polygon points="59,61 79,48 92,67 70,78" fill="#ffd60a" stroke="#111" stroke-width="3"/>
+        <polygon points="87,58 110,66 100,86 76,78" fill="${colors[2]}" stroke="#111" stroke-width="3"/>`;
+    }
+    if (kind === 'dumpling') {
+      return `<polygon points="30,99 48,70 78,58 112,68 132,100 109,119 52,118" fill="#fff7dd" stroke="#111" stroke-width="6"/>
+        <path d="M48 72 L56 103 M66 63 L70 108 M84 60 L84 111 M102 65 L98 108 M118 78 L108 108" stroke="#111" stroke-width="4"/>
+        <polygon points="49,94 72,82 95,94 82,107 58,107" fill="${colors[1]}" opacity=".72"/>`;
+    }
+    if (kind === 'fish') {
+      return `<polygon points="30,86 56,58 105,58 130,82 105,108 55,110" fill="${colors[1]}" stroke="#111" stroke-width="6"/>
+        <polygon points="112,82 140,58 136,106" fill="${colors[2]}" stroke="#111" stroke-width="5"/>
+        <circle cx="58" cy="78" r="6" fill="#111"/>
+        <polygon points="75,44 96,60 66,65" fill="#ffd60a" stroke="#111" stroke-width="4"/>
+        <path d="M54 94 C75 84,98 87,118 96" fill="none" stroke="#111" stroke-width="4"/>`;
+    }
+    if (kind === 'hotpot') {
+      return `<polygon points="30,78 130,78 116,125 44,125" fill="#2b2d42" stroke="#111" stroke-width="6"/>
+        <polygon points="42,54 118,54 130,80 30,80" fill="#e60012" stroke="#111" stroke-width="5"/>
+        <polygon points="51,64 72,49 87,72 62,82" fill="#7bf1a8" stroke="#111" stroke-width="3"/>
+        <polygon points="83,63 110,50 119,75 92,84" fill="#ffd60a" stroke="#111" stroke-width="3"/>
+        <path d="M56 45 C49 31,69 30,62 18 M85 44 C77 30,99 30,91 17 M111 46 C103 31,123 31,116 19" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>`;
+    }
+    if (kind === 'skewer') {
+      return `<polygon points="35,118 127,34 132,40 41,124" fill="#3a1d0f" stroke="#111" stroke-width="3"/>
+        <polygon points="47,91 65,70 84,86 62,106" fill="${colors[2]}" stroke="#111" stroke-width="5"/>
+        <polygon points="70,70 89,49 108,64 86,86" fill="#ffd60a" stroke="#111" stroke-width="5"/>
+        <polygon points="91,50 111,30 130,46 107,68" fill="${colors[0]}" stroke="#111" stroke-width="5"/>
+        <path d="M43 107 L33 124 M75 82 L63 101 M104 56 L93 74" stroke="#fff" stroke-width="4"/>`;
+    }
+    if (kind === 'salad') {
+      return `<ellipse cx="80" cy="103" rx="48" ry="24" fill="#ecfff8" stroke="#111" stroke-width="6"/>
+        <polygon points="38,86 62,52 78,90" fill="#4ade80" stroke="#111" stroke-width="4"/>
+        <polygon points="68,82 91,45 109,90" fill="#22c55e" stroke="#111" stroke-width="4"/>
+        <polygon points="93,83 122,61 120,103" fill="#84cc16" stroke="#111" stroke-width="4"/>
+        <circle cx="73" cy="84" r="10" fill="#ff6f91" stroke="#111" stroke-width="4"/>`;
+    }
+    if (kind === 'meat') {
+      return `<ellipse cx="80" cy="111" rx="52" ry="18" fill="#fff7dd" stroke="#111" stroke-width="6"/>
+        <polygon points="38,83 63,59 91,69 78,101 48,106" fill="#8b1e1e" stroke="#111" stroke-width="5"/>
+        <polygon points="78,73 110,56 130,78 111,109 82,101" fill="#b91c1c" stroke="#111" stroke-width="5"/>
+        <polygon points="58,70 74,63 67,86 48,94" fill="#ffd7a8" stroke="#111" stroke-width="3"/>
+        <polygon points="96,67 116,73 104,92 85,95" fill="#ffb703" stroke="#111" stroke-width="3"/>`;
+    }
+    if (kind === 'tofu') {
+      return `<ellipse cx="80" cy="112" rx="50" ry="18" fill="#fff" stroke="#111" stroke-width="6"/>
+        <rect x="38" y="67" width="34" height="30" rx="4" fill="#fff4bf" stroke="#111" stroke-width="5" transform="rotate(-9 55 82)"/>
+        <rect x="73" y="54" width="36" height="33" rx="4" fill="#fff7d6" stroke="#111" stroke-width="5" transform="rotate(8 91 70)"/>
+        <rect x="91" y="84" width="35" height="28" rx="4" fill="#ffe8a3" stroke="#111" stroke-width="5" transform="rotate(-4 108 98)"/>
+        <polygon points="47,101 76,84 117,99 88,119" fill="#e60012" opacity=".82" stroke="#111" stroke-width="3"/>`;
+    }
+    return `<polygon points="52,79 76,62 107,74 116,102 82,118 45,102" fill="${colors[2]}" stroke="#111" stroke-width="4"/>
+      <polygon points="104,40 125,49 112,66 91,57" fill="#ffd60a" stroke="#111" stroke-width="3"/>
+      <ellipse cx="80" cy="108" rx="50" ry="19" fill="#fff" stroke="#111" stroke-width="6"/>`;
   }
   function buildFoods(names = DEFAULT_FOOD_NAMES) {
     return names.map((name, index) => {
@@ -89,15 +172,13 @@
     const colors = COLOR_SETS[food.id % COLOR_SETS.length];
     const plate = food.sugarSafe ? '#ecfff8' : '#fff5f5';
     const rareStroke = food.rarity === 'SSR' ? '#ffd60a' : food.rarity === 'SR' ? '#7bdff2' : '#ffffff';
+    const kind = classifyFood(food.name);
     return `
-      <svg class="foodSvg" viewBox="0 0 160 160" width="${size}" height="${size}" role="img" aria-label="${food.name}">
+      <svg class="foodSvg" data-food-kind="${kind}" viewBox="0 0 160 160" width="${size}" height="${size}" role="img" aria-label="${food.name}">
         <defs><filter id="ink${food.id}" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="5" dy="5" stdDeviation="0" flood-color="#000" flood-opacity=".9"/></filter></defs>
         <rect x="8" y="10" width="140" height="136" rx="8" fill="${plate}" stroke="#111" stroke-width="6"/>
         <polygon points="16,20 148,12 132,50 38,43" fill="${colors[0]}" stroke="#111" stroke-width="4"/>
-        <polygon points="24,52 84,28 142,62 98,88 32,83" fill="${colors[1]}" stroke="#111" stroke-width="4"/>
-        <polygon points="34,86 98,54 132,108 56,130" fill="${colors[2]}" stroke="#111" stroke-width="4" filter="url(#ink${food.id})"/>
-        <polygon points="52,43 92,36 82,78" fill="#fff" opacity=".58"/>
-        <polygon points="76,90 136,72 126,122" fill="#111" opacity=".18"/>
+        <g filter="url(#ink${food.id})">${foodShape(kind, colors)}</g>
         <circle cx="118" cy="42" r="13" fill="${rareStroke}" stroke="#111" stroke-width="4"/>
         <text x="80" y="140" text-anchor="middle" font-size="13" font-weight="900" fill="#111">LOW POLY</text>
       </svg>`;
@@ -117,6 +198,7 @@
   let bgmIndex = 0;
   let muted = false;
   let ctx;
+  const sampleCache = new Map();
   const bgm = $('bgm');
   bgm.volume = 0.18;
 
@@ -165,14 +247,26 @@
     g.connect(c.destination);
     src.start();
   }
+  function playSample(name, volume = 0.32) {
+    if (muted || !SFX_ASSETS[name]) return;
+    let audio = sampleCache.get(name);
+    if (!audio) {
+      audio = new Audio(SFX_ASSETS[name]);
+      audio.preload = 'auto';
+      sampleCache.set(name, audio);
+    }
+    const instance = audio.cloneNode();
+    instance.volume = volume;
+    instance.play().catch(() => {});
+  }
   const sfx = {
-    click() { tone(920, 0.05, 'square', 0.03, 360); },
-    tick(i) { tone(420 + i * 14, 0.04, 'square', 0.028); },
+    click() { playSample('click', 0.34); tone(920, 0.05, 'square', 0.025, 360); },
+    tick(i) { playSample('tick', 0.18); tone(420 + i * 14, 0.035, 'square', 0.016); },
     whoosh() { noise(0.28, 0.07); tone(120, 0.24, 'sawtooth', 0.035, 980); },
-    warning() { tone(90, 0.32, 'sawtooth', 0.065, -28); setTimeout(() => tone(980, 0.11, 'square', 0.035), 120); },
+    warning() { playSample('warning', 0.42); tone(90, 0.32, 'sawtooth', 0.05, -28); setTimeout(() => tone(980, 0.11, 'square', 0.026), 120); },
     slash() { noise(0.12, 0.09); tone(1320, 0.09, 'sawtooth', 0.04, 680); },
     lock() { tone(120, 0.08, 'square', 0.06); setTimeout(() => tone(70, 0.18, 'sawtooth', 0.07), 80); },
-    boom() { noise(0.5, 0.13); tone(58, 0.42, 'sawtooth', 0.13, -18); setTimeout(() => tone(1500, 0.1, 'triangle', 0.04, 480), 80); },
+    boom() { playSample('reveal', 0.52); noise(0.5, 0.1); tone(58, 0.42, 'sawtooth', 0.1, -18); setTimeout(() => tone(1500, 0.1, 'triangle', 0.035, 480), 80); },
     shine() { [1500, 1900, 2400].forEach((f, i) => setTimeout(() => tone(f, 0.08, 'sine', 0.026), i * 70)); },
   };
   function foodHTML(food) {
@@ -358,6 +452,6 @@
   initBackground();
   wireEvents();
   renderAdmin();
-  drawReels([foods[5], foods[18], foods[77]]);
+  drawReels([foods[20], foods[43], foods[8]]);
   drawResult(foods[0]);
 }());
