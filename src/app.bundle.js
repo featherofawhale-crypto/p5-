@@ -36,6 +36,61 @@
     { id: 'pixel-arcade', name: '像素街机', prompt: '16-bit arcade food icons, punchy colors, crisp silhouette, game item style, readable at small size' },
     { id: 'manga-bento', name: '漫画便当', prompt: 'Japanese manga bento food illustration, thick ink lines, screentone texture, expressive comic impact, clear dish identity' },
   ];
+  const SOUND_CUE_RECIPES = {
+    click: [
+      { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'click', gain: 0.32 },
+      { at: 10, role: 'sparkle', band: 'high', source: 'tone', freq: 920, dur: 0.05, wave: 'square', gain: 0.024, slide: 360 },
+    ],
+    tick: [
+      { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'tick', gain: 0.16 },
+      { at: 8, role: 'sparkle', band: 'high', source: 'tone', freq: 520, dur: 0.035, wave: 'square', gain: 0.014, pitchStep: 14 },
+    ],
+    whoosh: [
+      { at: -80, role: 'riser', band: 'mid', source: 'noise', dur: 0.42, gain: 0.052 },
+      { at: 0, role: 'riser', band: 'low', source: 'tone', freq: 95, dur: 0.38, wave: 'sawtooth', gain: 0.028, slide: 920 },
+      { at: 120, role: 'sparkle', band: 'high', source: 'tone', freq: 1520, dur: 0.08, wave: 'triangle', gain: 0.018, slide: 420 },
+    ],
+    slash: [
+      { at: -45, role: 'riser', band: 'high', source: 'noise', dur: 0.16, gain: 0.072 },
+      { at: 0, role: 'impact', band: 'mid', source: 'tone', freq: 1320, dur: 0.08, wave: 'sawtooth', gain: 0.034, slide: 680 },
+      { at: 60, role: 'tail', band: 'high', source: 'tone', freq: 2400, dur: 0.08, wave: 'triangle', gain: 0.016 },
+    ],
+    warning: [
+      { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'warning', gain: 0.34 },
+      { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 86, dur: 0.42, wave: 'sawtooth', gain: 0.046, slide: -24 },
+      { at: 150, role: 'sparkle', band: 'high', source: 'tone', freq: 980, dur: 0.11, wave: 'square', gain: 0.026 },
+      { at: 430, role: 'sparkle', band: 'high', source: 'tone', freq: 740, dur: 0.09, wave: 'square', gain: 0.018 },
+    ],
+    lock: [
+      { at: -40, role: 'riser', band: 'mid', source: 'noise', dur: 0.12, gain: 0.035 },
+      { at: 0, role: 'impact', band: 'low', source: 'tone', freq: 118, dur: 0.08, wave: 'square', gain: 0.056 },
+      { at: 82, role: 'sub', band: 'low', source: 'tone', freq: 68, dur: 0.2, wave: 'sawtooth', gain: 0.064 },
+      { at: 130, role: 'tail', band: 'mid', source: 'sample', sample: 'click', gain: 0.14 },
+    ],
+    reveal: [
+      { at: -520, role: 'riser', band: 'mid', source: 'noise', dur: 0.7, gain: 0.04 },
+      { at: -260, role: 'riser', band: 'high', source: 'tone', freq: 420, dur: 0.34, wave: 'sawtooth', gain: 0.022, slide: 1180 },
+      { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 54, dur: 0.48, wave: 'sawtooth', gain: 0.092, slide: -16 },
+      { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.48 },
+      { at: 20, role: 'impact', band: 'mid', source: 'noise', dur: 0.42, gain: 0.072 },
+      { at: 90, role: 'sparkle', band: 'high', source: 'tone', freq: 1500, dur: 0.1, wave: 'triangle', gain: 0.036, slide: 520 },
+      { at: 260, role: 'sparkle', band: 'high', source: 'tone', freq: 2250, dur: 0.08, wave: 'sine', gain: 0.024 },
+      { at: 520, role: 'tail', band: 'mid', source: 'tone', freq: 760, dur: 0.26, wave: 'sine', gain: 0.018, slide: -220 },
+    ],
+    shine: [
+      { at: 0, role: 'sparkle', band: 'high', source: 'tone', freq: 1500, dur: 0.08, wave: 'sine', gain: 0.024 },
+      { at: 70, role: 'sparkle', band: 'high', source: 'tone', freq: 1900, dur: 0.08, wave: 'sine', gain: 0.022 },
+      { at: 140, role: 'sparkle', band: 'high', source: 'tone', freq: 2400, dur: 0.08, wave: 'sine', gain: 0.02 },
+      { at: 220, role: 'tail', band: 'mid', source: 'tone', freq: 1100, dur: 0.18, wave: 'triangle', gain: 0.014 },
+    ],
+  };
+  function getSoundCuePlan(name, intensity = 1) {
+    const strength = Math.min(1.6, Math.max(0.2, Number(intensity) || 1));
+    const recipe = SOUND_CUE_RECIPES[name] || [];
+    return recipe
+      .map((layer) => ({ ...layer, gain: Number((layer.gain * strength).toFixed(4)) }))
+      .sort((a, b) => a.at - b.at);
+  }
   const DEFAULT_API_BODY = `{
   "model": "gpt-4o-mini",
   "messages": [
@@ -333,7 +388,7 @@
     g.connect(c.destination);
     src.start();
   }
-  function playSample(name, volume = 0.32) {
+  function playSample(name, volume = 0.32, rate = 1) {
     if (muted || !SFX_ASSETS[name]) return;
     let audio = sampleCache.get(name);
     if (!audio) {
@@ -343,17 +398,51 @@
     }
     const instance = audio.cloneNode();
     instance.volume = volume;
+    instance.playbackRate = rate;
     instance.play().catch(() => {});
   }
+  function duckMusic(amount = 0.45, ms = 680) {
+    if (muted) return;
+    const base = 0.18;
+    bgm.volume = Math.max(0.05, base * amount);
+    setTimeout(() => {
+      if (!muted) bgm.volume = base;
+    }, ms);
+  }
+  function playSoundLayer(layer, offset = 0, pitchOffset = 0) {
+    const run = () => {
+      if (muted) return;
+      if (layer.role === 'impact' && layer.band === 'mid') duckMusic(0.55, 420);
+      if (layer.source === 'sample') playSample(layer.sample, layer.gain, layer.rate || 1);
+      if (layer.source === 'noise') noise(layer.dur, layer.gain);
+      if (layer.source === 'tone') {
+        const freq = layer.freq + (layer.pitchStep ? pitchOffset * layer.pitchStep : 0);
+        tone(freq, layer.dur, layer.wave, layer.gain, layer.slide || 0);
+      }
+    };
+    if (offset <= 0) run();
+    else setTimeout(run, offset);
+  }
+  function playLayeredCue(name, intensity = 1, options = {}) {
+    if (muted) return;
+    const plan = getSoundCuePlan(name, intensity);
+    if (!plan.length) return;
+    const preroll = options.preroll ? Math.min(0, ...plan.map((layer) => layer.at)) : 0;
+    plan.forEach((layer) => playSoundLayer(layer, Math.max(0, layer.at - preroll), options.pitchOffset || 0));
+    document.documentElement.dataset.soundCue = name;
+    document.documentElement.dataset.soundLayers = String(plan.length);
+    document.documentElement.dataset.soundRoles = [...new Set(plan.map((layer) => layer.role))].join(',');
+    document.documentElement.dataset.soundBands = [...new Set(plan.map((layer) => layer.band))].join(',');
+  }
   const sfx = {
-    click() { playSample('click', 0.34); tone(920, 0.05, 'square', 0.025, 360); },
-    tick(i) { playSample('tick', 0.18); tone(420 + i * 14, 0.035, 'square', 0.016); },
-    whoosh() { noise(0.28, 0.07); tone(120, 0.24, 'sawtooth', 0.035, 980); },
-    warning() { playSample('warning', 0.42); tone(90, 0.32, 'sawtooth', 0.05, -28); setTimeout(() => tone(980, 0.11, 'square', 0.026), 120); },
-    slash() { noise(0.12, 0.09); tone(1320, 0.09, 'sawtooth', 0.04, 680); },
-    lock() { tone(120, 0.08, 'square', 0.06); setTimeout(() => tone(70, 0.18, 'sawtooth', 0.07), 80); },
-    boom() { playSample('reveal', 0.52); noise(0.5, 0.1); tone(58, 0.42, 'sawtooth', 0.1, -18); setTimeout(() => tone(1500, 0.1, 'triangle', 0.035, 480), 80); },
-    shine() { [1500, 1900, 2400].forEach((f, i) => setTimeout(() => tone(f, 0.08, 'sine', 0.026), i * 70)); },
+    click() { playLayeredCue('click', 1); },
+    tick(i) { playLayeredCue('tick', 0.8, { pitchOffset: i }); },
+    whoosh() { playLayeredCue('whoosh', 1.1); },
+    warning() { playLayeredCue('warning', 1.15); },
+    slash() { playLayeredCue('slash', 1); },
+    lock() { playLayeredCue('lock', 1.1); },
+    revealCharge() { playLayeredCue('reveal', 1.15, { preroll: true }); },
+    shine() { playLayeredCue('shine', 1); },
   };
   function foodHTML(food) {
     return `<div class="foodArt">${foodArt(food)}</div><div class="foodName">${food.name}</div><div class="rarity">${food.rarity}</div>`;
@@ -427,13 +516,14 @@
     drawReels([randomFood(foods), final, randomFood(foods)]);
     document.querySelectorAll('.reel').forEach((node) => node.classList.add('locked'));
     sfx.lock();
-    await delay(900);
+    await delay(380);
+    sfx.revealCharge();
+    await delay(520);
     clearInterval(inter);
     $('flash').classList.remove('go');
     $('flash').classList.add('burst');
     drawResult(final);
     setPhase("TODAY'S DESTINY");
-    sfx.boom();
     await delay(620);
     cut('');
     sfx.shine();

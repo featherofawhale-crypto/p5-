@@ -10,6 +10,7 @@ import {
   extractFoodsFromApiResponse,
   foodArt,
   foodIconPath,
+  getSoundCuePlan,
   normalizeFood,
 } from '../src/core.js';
 
@@ -88,6 +89,19 @@ test('foodIconPath maps food kinds to local Twemoji SVG assets', () => {
   assert.equal(foodIconPath('noodle'), 'assets/food/twemoji/1f35c.svg');
   assert.equal(foodIconPath('rice'), 'assets/food/twemoji/1f35a.svg');
   assert.equal(foodIconPath('plate'), 'assets/food/twemoji/1f37d.svg');
+});
+
+test('getSoundCuePlan layers editorial sound roles across frequency bands', () => {
+  const reveal = getSoundCuePlan('reveal');
+  const roles = new Set(reveal.map((layer) => layer.role));
+  const bands = new Set(reveal.map((layer) => layer.band));
+
+  assert.deepEqual([...roles].sort(), ['impact', 'riser', 'sparkle', 'sub', 'tail']);
+  assert.equal(bands.has('low'), true);
+  assert.equal(bands.has('mid'), true);
+  assert.equal(bands.has('high'), true);
+  assert.equal(reveal.some((layer) => layer.at < 0), true);
+  assert.equal(reveal.some((layer) => layer.at > 0), true);
 });
 
 test('buildApiGenerationRequest applies built-in style preset and templates request body', () => {

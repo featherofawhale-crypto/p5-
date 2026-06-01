@@ -52,6 +52,66 @@ export const API_STYLE_PRESETS = [
   },
 ];
 
+export const SOUND_CUE_RECIPES = {
+  click: [
+    { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'click', gain: 0.32 },
+    { at: 10, role: 'sparkle', band: 'high', source: 'tone', freq: 920, dur: 0.05, wave: 'square', gain: 0.024, slide: 360 },
+  ],
+  tick: [
+    { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'tick', gain: 0.16 },
+    { at: 8, role: 'sparkle', band: 'high', source: 'tone', freq: 520, dur: 0.035, wave: 'square', gain: 0.014, pitchStep: 14 },
+  ],
+  whoosh: [
+    { at: -80, role: 'riser', band: 'mid', source: 'noise', dur: 0.42, gain: 0.052 },
+    { at: 0, role: 'riser', band: 'low', source: 'tone', freq: 95, dur: 0.38, wave: 'sawtooth', gain: 0.028, slide: 920 },
+    { at: 120, role: 'sparkle', band: 'high', source: 'tone', freq: 1520, dur: 0.08, wave: 'triangle', gain: 0.018, slide: 420 },
+  ],
+  slash: [
+    { at: -45, role: 'riser', band: 'high', source: 'noise', dur: 0.16, gain: 0.072 },
+    { at: 0, role: 'impact', band: 'mid', source: 'tone', freq: 1320, dur: 0.08, wave: 'sawtooth', gain: 0.034, slide: 680 },
+    { at: 60, role: 'tail', band: 'high', source: 'tone', freq: 2400, dur: 0.08, wave: 'triangle', gain: 0.016 },
+  ],
+  warning: [
+    { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'warning', gain: 0.34 },
+    { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 86, dur: 0.42, wave: 'sawtooth', gain: 0.046, slide: -24 },
+    { at: 150, role: 'sparkle', band: 'high', source: 'tone', freq: 980, dur: 0.11, wave: 'square', gain: 0.026 },
+    { at: 430, role: 'sparkle', band: 'high', source: 'tone', freq: 740, dur: 0.09, wave: 'square', gain: 0.018 },
+  ],
+  lock: [
+    { at: -40, role: 'riser', band: 'mid', source: 'noise', dur: 0.12, gain: 0.035 },
+    { at: 0, role: 'impact', band: 'low', source: 'tone', freq: 118, dur: 0.08, wave: 'square', gain: 0.056 },
+    { at: 82, role: 'sub', band: 'low', source: 'tone', freq: 68, dur: 0.2, wave: 'sawtooth', gain: 0.064 },
+    { at: 130, role: 'tail', band: 'mid', source: 'sample', sample: 'click', gain: 0.14 },
+  ],
+  reveal: [
+    { at: -520, role: 'riser', band: 'mid', source: 'noise', dur: 0.7, gain: 0.04 },
+    { at: -260, role: 'riser', band: 'high', source: 'tone', freq: 420, dur: 0.34, wave: 'sawtooth', gain: 0.022, slide: 1180 },
+    { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 54, dur: 0.48, wave: 'sawtooth', gain: 0.092, slide: -16 },
+    { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.48 },
+    { at: 20, role: 'impact', band: 'mid', source: 'noise', dur: 0.42, gain: 0.072 },
+    { at: 90, role: 'sparkle', band: 'high', source: 'tone', freq: 1500, dur: 0.1, wave: 'triangle', gain: 0.036, slide: 520 },
+    { at: 260, role: 'sparkle', band: 'high', source: 'tone', freq: 2250, dur: 0.08, wave: 'sine', gain: 0.024 },
+    { at: 520, role: 'tail', band: 'mid', source: 'tone', freq: 760, dur: 0.26, wave: 'sine', gain: 0.018, slide: -220 },
+  ],
+  shine: [
+    { at: 0, role: 'sparkle', band: 'high', source: 'tone', freq: 1500, dur: 0.08, wave: 'sine', gain: 0.024 },
+    { at: 70, role: 'sparkle', band: 'high', source: 'tone', freq: 1900, dur: 0.08, wave: 'sine', gain: 0.022 },
+    { at: 140, role: 'sparkle', band: 'high', source: 'tone', freq: 2400, dur: 0.08, wave: 'sine', gain: 0.02 },
+    { at: 220, role: 'tail', band: 'mid', source: 'tone', freq: 1100, dur: 0.18, wave: 'triangle', gain: 0.014 },
+  ],
+};
+
+export function getSoundCuePlan(name, intensity = 1) {
+  const strength = Math.min(1.6, Math.max(0.2, Number(intensity) || 1));
+  const recipe = SOUND_CUE_RECIPES[name] || [];
+  return recipe
+    .map((layer) => ({
+      ...layer,
+      gain: Number((layer.gain * strength).toFixed(4)),
+    }))
+    .sort((a, b) => a.at - b.at);
+}
+
 const DEFAULT_API_BODY_TEMPLATE = JSON.stringify({
   prompt: '{style}\nGenerate {count} Chinese dinner options. Return JSON only with an array named foods. Each item must have name, rarity(N/R/SR/SSR), calories, health, sugarSafe.',
   currentFoods: '{foodsJson}',

@@ -6,6 +6,7 @@ import {
   deleteFood,
   extractFoodsFromApiResponse,
   foodArt,
+  getSoundCuePlan,
   parseFoods,
   randomFood,
   serializeFoods,
@@ -107,7 +108,7 @@ function noise(dur = 0.14, gain = 0.045) {
   src.start();
 }
 
-function playSample(name, volume = 0.32) {
+function playSample(name, volume = 0.32, rate = 1) {
   if (muted || !SFX_ASSETS[name]) return;
   let audio = sampleCache.get(name);
   if (!audio) {
@@ -117,18 +118,55 @@ function playSample(name, volume = 0.32) {
   }
   const instance = audio.cloneNode();
   instance.volume = volume;
+  instance.playbackRate = rate;
   instance.play().catch(() => {});
 }
 
+function duckMusic(amount = 0.45, ms = 680) {
+  if (muted) return;
+  const base = 0.18;
+  bgm.volume = Math.max(0.05, base * amount);
+  setTimeout(() => {
+    if (!muted) bgm.volume = base;
+  }, ms);
+}
+
+function playSoundLayer(layer, offset = 0, pitchOffset = 0) {
+  const run = () => {
+    if (muted) return;
+    if (layer.role === 'impact' && layer.band === 'mid') duckMusic(0.55, 420);
+    if (layer.source === 'sample') playSample(layer.sample, layer.gain, layer.rate || 1);
+    if (layer.source === 'noise') noise(layer.dur, layer.gain);
+    if (layer.source === 'tone') {
+      const freq = layer.freq + (layer.pitchStep ? pitchOffset * layer.pitchStep : 0);
+      tone(freq, layer.dur, layer.wave, layer.gain, layer.slide || 0);
+    }
+  };
+  if (offset <= 0) run();
+  else setTimeout(run, offset);
+}
+
+function playLayeredCue(name, intensity = 1, options = {}) {
+  if (muted) return;
+  const plan = getSoundCuePlan(name, intensity);
+  if (!plan.length) return;
+  const preroll = options.preroll ? Math.min(0, ...plan.map((layer) => layer.at)) : 0;
+  plan.forEach((layer) => playSoundLayer(layer, Math.max(0, layer.at - preroll), options.pitchOffset || 0));
+  document.documentElement.dataset.soundCue = name;
+  document.documentElement.dataset.soundLayers = String(plan.length);
+  document.documentElement.dataset.soundRoles = [...new Set(plan.map((layer) => layer.role))].join(',');
+  document.documentElement.dataset.soundBands = [...new Set(plan.map((layer) => layer.band))].join(',');
+}
+
 const sfx = {
-  click() { playSample('click', 0.34); tone(920, 0.05, 'square', 0.025, 360); },
-  tick(i) { playSample('tick', 0.18); tone(420 + i * 14, 0.035, 'square', 0.016); },
-  whoosh() { noise(0.28, 0.07); tone(120, 0.24, 'sawtooth', 0.035, 980); },
-  warning() { playSample('warning', 0.42); tone(90, 0.32, 'sawtooth', 0.05, -28); setTimeout(() => tone(980, 0.11, 'square', 0.026), 120); },
-  slash() { noise(0.12, 0.09); tone(1320, 0.09, 'sawtooth', 0.04, 680); },
-  lock() { tone(120, 0.08, 'square', 0.06); setTimeout(() => tone(70, 0.18, 'sawtooth', 0.07), 80); },
-  boom() { playSample('reveal', 0.52); noise(0.5, 0.1); tone(58, 0.42, 'sawtooth', 0.1, -18); setTimeout(() => tone(1500, 0.1, 'triangle', 0.035, 480), 80); },
-  shine() { [1500, 1900, 2400].forEach((f, i) => setTimeout(() => tone(f, 0.08, 'sine', 0.026), i * 70)); },
+  click() { playLayeredCue('click', 1); },
+  tick(i) { playLayeredCue('tick', 0.8, { pitchOffset: i }); },
+  whoosh() { playLayeredCue('whoosh', 1.1); },
+  warning() { playLayeredCue('warning', 1.15); },
+  slash() { playLayeredCue('slash', 1); },
+  lock() { playLayeredCue('lock', 1.1); },
+  revealCharge() { playLayeredCue('reveal', 1.15, { preroll: true }); },
+  shine() { playLayeredCue('shine', 1); },
 };
 
 function foodHTML(food) {
@@ -210,13 +248,14 @@ async function startRoll() {
   drawReels([randomFood(foods), final, randomFood(foods)]);
   document.querySelectorAll('.reel').forEach((node) => node.classList.add('locked'));
   sfx.lock();
-  await delay(900);
+  await delay(380);
+  sfx.revealCharge();
+  await delay(520);
   clearInterval(inter);
   $('flash').classList.remove('go');
   $('flash').classList.add('burst');
   drawResult(final);
   setPhase("TODAY'S DESTINY");
-  sfx.boom();
   await delay(620);
   cut('');
   sfx.shine();
