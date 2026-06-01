@@ -9,6 +9,7 @@ import {
   deleteFood,
   extractFoodsFromApiResponse,
   foodArt,
+  foodIconPath,
   normalizeFood,
 } from '../src/core.js';
 
@@ -61,7 +62,7 @@ test('foodArt returns low-poly comic svg markup without emoji art', () => {
   const art = foodArt({ id: 8, name: '麻辣香锅', rarity: 'SSR', calories: 800, health: 45, sugarSafe: false });
 
   assert.match(art, /<svg/);
-  assert.match(art, /polygon/);
+  assert.match(art, /<image/);
   assert.match(art, /LOW POLY/);
   assert.doesNotMatch(art, /🍜|🥘|🍚|🥟|🍲|🥗|🍛|🔥|🥢|🍖|🦀|🍗/);
 });
@@ -81,6 +82,12 @@ test('foodArt uses recognizable food-specific silhouettes', () => {
   for (const [name, kind] of cases) {
     assert.match(foodArt({ id: 1, name, rarity: 'R', calories: 500, health: 50, sugarSafe: false }), new RegExp(`data-food-kind="${kind}"`));
   }
+});
+
+test('foodIconPath maps food kinds to local Twemoji SVG assets', () => {
+  assert.equal(foodIconPath('noodle'), 'assets/food/twemoji/1f35c.svg');
+  assert.equal(foodIconPath('rice'), 'assets/food/twemoji/1f35a.svg');
+  assert.equal(foodIconPath('plate'), 'assets/food/twemoji/1f37d.svg');
 });
 
 test('buildApiGenerationRequest applies built-in style preset and templates request body', () => {

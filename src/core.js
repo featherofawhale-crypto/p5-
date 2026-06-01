@@ -139,6 +139,22 @@ function foodShape(kind, colors) {
     <ellipse cx="80" cy="108" rx="50" ry="19" fill="#fff" stroke="#111" stroke-width="6"/>`;
 }
 
+export function foodIconPath(kind) {
+  const icons = {
+    noodle: 'assets/food/twemoji/1f35c.svg',
+    rice: 'assets/food/twemoji/1f35a.svg',
+    dumpling: 'assets/food/twemoji/1f95f.svg',
+    fish: 'assets/food/twemoji/1f41f.svg',
+    hotpot: 'assets/food/twemoji/1f372.svg',
+    skewer: 'assets/food/twemoji/1f362.svg',
+    meat: 'assets/food/twemoji/1f969.svg',
+    tofu: 'assets/food/twemoji/1f9c8.svg',
+    salad: 'assets/food/twemoji/1f957.svg',
+    plate: 'assets/food/twemoji/1f37d.svg',
+  };
+  return icons[kind] || icons.plate;
+}
+
 function clamp(value, min, max) {
   const number = Number(value);
   if (!Number.isFinite(number)) return min;
@@ -262,9 +278,10 @@ export function foodArt(food, size = 160) {
           <feDropShadow dx="5" dy="5" stdDeviation="0" flood-color="#000" flood-opacity=".9"/>
         </filter>
       </defs>
-      <rect x="8" y="10" width="140" height="136" rx="8" fill="${plate}" stroke="#111" stroke-width="6"/>
-      <polygon points="16,20 148,12 132,50 38,43" fill="${colors[0]}" stroke="#111" stroke-width="4"/>
-      <g filter="url(#ink${food.id})">${foodShape(kind, colors)}</g>
+      <rect x="8" y="10" width="140" height="136" rx="8" fill="#fff" stroke="#111" stroke-width="6"/>
+      <polygon points="16,20 148,12 132,45 38,40" fill="${colors[0]}" stroke="#111" stroke-width="4" opacity=".88"/>
+      <rect x="25" y="36" width="110" height="96" rx="10" fill="${plate}" stroke="#111" stroke-width="5"/>
+      <image href="${foodIconPath(kind)}" x="38" y="44" width="84" height="84" preserveAspectRatio="xMidYMid meet" filter="url(#ink${food.id})"/>
       <circle cx="118" cy="42" r="13" fill="${rareStroke}" stroke="#111" stroke-width="4"/>
       <text x="80" y="140" text-anchor="middle" font-size="13" font-weight="900" fill="#111">LOW POLY</text>
     </svg>`;

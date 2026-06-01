@@ -15,7 +15,7 @@ button{cursor:pointer}
 .iconBtn.red{background:#e60012;color:#fff}.iconBtn.dark{background:#111;color:#fff;border:2px solid #fff}
 .soundbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:9px 12px;background:rgba(0,0,0,.72);border:2px solid rgba(255,255,255,.7);border-radius:8px}
 .soundbar b{display:block;color:#ffd60a;font-size:11px;letter-spacing:.2em}.soundbar span{font-size:11px;letter-spacing:.1em;font-weight:900}
-.soundbar label{display:flex;align-items:center;gap:8px}.soundbar input{width:110px;accent-color:#ffd60a}
+.soundbar label{display:none}.soundbar input{display:none}
 .machine{margin:16px 0 12px;border:4px solid #fff;border-radius:20px;background:rgba(0,0,0,.78);padding:12px;box-shadow:12px 12px 0 #e60012;backdrop-filter:blur(8px)}
 .machine.shake{animation:shake .22s infinite}.machine.finalCharge{animation:charge .45s infinite}
 .status{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
@@ -24,7 +24,7 @@ button{cursor:pointer}
 .reels{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
 .reel{height:35dvh;max-height:185px;min-height:138px;position:relative;border:3px solid #fff;border-radius:14px;overflow:hidden;background:#fff;color:#000;box-shadow:inset 0 0 0 5px #111}
 .heroReel{transform:translateY(-5px)}
-.reel:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,#fff 0%,#fff 38%,#e60012 39%,#e60012 54%,#111 55%);opacity:.72}
+.reel:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,#fff 0%,#fff 62%,#e60012 63%,#e60012 74%,#111 75%);opacity:.82}
 .reel.spin{animation:reelShake .16s infinite}.reel.locked{animation:slotLock .42s both}
 .foodInner{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px}
 .foodArt{width:min(118px,28vw);height:min(118px,28vw);display:grid;place-items:center;filter:drop-shadow(5px 5px 0 rgba(0,0,0,.3))}
