@@ -1,0 +1,9 @@
+{
+  "name": "p5-lottery-blind-box",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "py -m http.server 5173",
+    "test": "node --test"
+  }
+}
