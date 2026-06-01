@@ -29,6 +29,22 @@
     ['#a0c4ff', '#bdb2ff', '#fb5607', '#0b090a'],
   ];
   const STORAGE_KEY = 'dinner-slot-foods-v2';
+  const API_CONFIG_KEY = 'dinner-slot-api-config-v1';
+  const API_STYLE_PRESETS = [
+    { id: 'low-poly-comic', name: '低多边形美漫', prompt: 'low-poly American comic food illustration, bold black ink, angular facets, dramatic red white black palette, readable food silhouette' },
+    { id: 'persona-punk', name: '怪盗红黑冲击', prompt: 'stylish phantom-thief game UI food concept, red black white, sharp diagonal composition, high contrast, dramatic reveal card' },
+    { id: 'pixel-arcade', name: '像素街机', prompt: '16-bit arcade food icons, punchy colors, crisp silhouette, game item style, readable at small size' },
+    { id: 'manga-bento', name: '漫画便当', prompt: 'Japanese manga bento food illustration, thick ink lines, screentone texture, expressive comic impact, clear dish identity' },
+  ];
+  const DEFAULT_API_BODY = `{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {"role": "system", "content": "{schema}"},
+    {"role": "user", "content": "Style preset: {style}\\nGenerate {count} dinner blind-box foods. Current menu JSON: {foodsJson}"}
+  ],
+  "temperature": 0.9,
+  "response_format": {"type": "json_object"}
+}`;
   const BGM = [
     { name: 'Last Surprise', src: 'assets/last_surprise.m4a' },
     { name: 'Wake Up Get Up Get', src: 'assets/wake_up_get_up.m4a' },
@@ -168,6 +184,50 @@
   function randomFood(foods) {
     return foods[Math.floor(Math.random() * foods.length)] ?? foods[0];
   }
+  function parseJsonObject(text, fallback = {}) {
+    if (!String(text ?? '').trim()) return fallback;
+    const parsed = JSON.parse(text);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('JSON must be an object');
+    return parsed;
+  }
+  function getPathValue(value, path) {
+    if (!path) return value;
+    return String(path).split('.').filter(Boolean).reduce((current, key) => current?.[key], value);
+  }
+  function renderTemplate(template, vars) {
+    return String(template ?? '').replace(/\{style\}|\{count\}|\{foodsJson\}|\{foodsArray\}|\{schema\}/g, (token) => vars[token.slice(1, -1)] ?? '');
+  }
+  function buildApiGenerationRequest(config, foods = []) {
+    const preset = API_STYLE_PRESETS.find((item) => item.id === config?.stylePresetId) ?? API_STYLE_PRESETS[0];
+    const headers = { 'Content-Type': 'application/json', ...parseJsonObject(config?.headersJson, {}) };
+    if (config?.apiKey) headers.Authorization = `Bearer ${config.apiKey}`;
+    const normalized = foods.map((food) => normalizeFood(food, food.id));
+    const vars = {
+      style: JSON.stringify(preset.prompt).slice(1, -1),
+      count: String(config?.count || 8),
+      foodsJson: JSON.stringify(JSON.stringify(normalized)).slice(1, -1),
+      foodsArray: JSON.stringify(normalized),
+      schema: JSON.stringify('Return JSON: {"foods":[{"name":"string","rarity":"N|R|SR|SSR","calories":number,"health":number,"sugarSafe":boolean}]}').slice(1, -1),
+    };
+    return {
+      url: String(config?.endpoint ?? '').trim(),
+      options: {
+        method: String(config?.method || 'POST').toUpperCase(),
+        headers,
+        body: renderTemplate(config?.bodyTemplate || DEFAULT_API_BODY, vars),
+      },
+      preset,
+    };
+  }
+  function extractFoodsFromApiResponse(response, responsePath = 'foods') {
+    let value = getPathValue(response, responsePath);
+    if (typeof value === 'string') {
+      const parsed = JSON.parse(value);
+      value = Array.isArray(parsed) ? parsed : parsed.foods;
+    }
+    if (!Array.isArray(value)) throw new Error('API response did not contain a food array');
+    return value.map((food, index) => normalizeFood({ ...food, id: index + 1 }, index + 1));
+  }
   function foodArt(food, size = 160) {
     const colors = COLOR_SETS[food.id % COLOR_SETS.length];
     const plate = food.sugarSafe ? '#ecfff8' : '#fff5f5';
@@ -212,6 +272,16 @@
   }
   function saveFoods() {
     localStorage.setItem(STORAGE_KEY, serializeFoods(foods));
+  }
+  function loadApiConfig() {
+    try {
+      return { bodyTemplate: DEFAULT_API_BODY, responsePath: 'foods', count: 8, method: 'POST', stylePresetId: API_STYLE_PRESETS[0].id, ...JSON.parse(localStorage.getItem(API_CONFIG_KEY) || '{}') };
+    } catch {
+      return { bodyTemplate: DEFAULT_API_BODY, responsePath: 'foods', count: 8, method: 'POST', stylePresetId: API_STYLE_PRESETS[0].id };
+    }
+  }
+  function saveApiConfig(config) {
+    localStorage.setItem(API_CONFIG_KEY, JSON.stringify(config));
   }
   function audioCtx() {
     if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -365,6 +435,56 @@
       <button data-delete="${food.id}">删除</button>
     </div>`).join('');
   }
+  function initApiPanel() {
+    $('apiStylePreset').innerHTML = API_STYLE_PRESETS.map((preset) => `<option value="${preset.id}">${preset.name}</option>`).join('');
+    const config = loadApiConfig();
+    $('apiEndpoint').value = config.endpoint || '';
+    $('apiMethod').value = config.method || 'POST';
+    $('apiKey').value = config.apiKey || '';
+    $('apiStylePreset').value = config.stylePresetId || API_STYLE_PRESETS[0].id;
+    $('apiCount').value = config.count || 8;
+    $('apiResponsePath').value = config.responsePath || 'foods';
+    $('apiHeaders').value = config.headersJson || '';
+    $('apiBody').value = config.bodyTemplate || DEFAULT_API_BODY;
+  }
+  function readApiPanel() {
+    return {
+      endpoint: $('apiEndpoint').value.trim(),
+      method: $('apiMethod').value,
+      apiKey: $('apiKey').value.trim(),
+      stylePresetId: $('apiStylePreset').value,
+      count: Number($('apiCount').value || 8),
+      responsePath: $('apiResponsePath').value.trim() || 'foods',
+      headersJson: $('apiHeaders').value.trim(),
+      bodyTemplate: $('apiBody').value,
+    };
+  }
+  async function generateFoodsFromApi(mode) {
+    const config = readApiPanel();
+    saveApiConfig(config);
+    if (!config.endpoint) {
+      $('apiStatus').textContent = '请先填写 API URL。';
+      return;
+    }
+    try {
+      $('apiStatus').textContent = '正在请求 API...';
+      const request = buildApiGenerationRequest(config, foods);
+      if (request.options.method === 'GET') delete request.options.body;
+      const response = await fetch(request.url, request.options);
+      const text = await response.text();
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${text.slice(0, 180)}`);
+      const payload = JSON.parse(text);
+      const generated = extractFoodsFromApiResponse(payload, config.responsePath);
+      foods = mode === 'append' ? [...foods, ...generated.map((food, index) => ({ ...food, id: foods.length + index + 1 }))] : generated;
+      saveFoods();
+      renderAdmin();
+      drawReels([randomFood(foods), randomFood(foods), randomFood(foods)]);
+      drawResult(foods[0]);
+      $('apiStatus').textContent = `已生成 ${generated.length} 个食物，使用预设：${request.preset.name}`;
+    } catch (error) {
+      $('apiStatus').textContent = `生成失败：${error.message}`;
+    }
+  }
   function initBackground() {
     for (let i = 0; i < 34; i += 1) {
       const line = document.createElement('i');
@@ -448,9 +568,12 @@
       drawReels([randomFood(foods), randomFood(foods), randomFood(foods)]);
       drawResult(foods[0]);
     });
+    $('apiReplaceBtn').addEventListener('click', () => generateFoodsFromApi('replace'));
+    $('apiAppendBtn').addEventListener('click', () => generateFoodsFromApi('append'));
   }
   initBackground();
   wireEvents();
+  initApiPanel();
   renderAdmin();
   drawReels([foods[20], foods[43], foods[8]]);
   drawResult(foods[0]);

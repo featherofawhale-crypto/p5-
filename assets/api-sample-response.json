@@ -1,0 +1,18 @@
+{
+  "foods": [
+    {
+      "name": "AI 低多边形牛肉面",
+      "rarity": "SR",
+      "calories": 620,
+      "health": 66,
+      "sugarSafe": false
+    },
+    {
+      "name": "AI 控糖蒸鱼套餐",
+      "rarity": "SSR",
+      "calories": 330,
+      "health": 94,
+      "sugarSafe": true
+    }
+  ]
+}

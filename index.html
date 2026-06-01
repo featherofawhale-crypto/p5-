@@ -88,6 +88,27 @@
         <button id="resetBtn">重置</button>
       </div>
       <textarea id="jsonBox" spellcheck="false" placeholder="导出/导入菜单 JSON"></textarea>
+      <section class="apiBox">
+        <div class="apiTitle">
+          <span class="label">API GENERATOR</span>
+          <small>接口需允许浏览器跨域；Key 仅保存在本机浏览器</small>
+        </div>
+        <div class="apiGrid">
+          <input id="apiEndpoint" placeholder="API URL，例如 https://api.example.com/v1/chat/completions" />
+          <select id="apiMethod"><option>POST</option><option>GET</option></select>
+          <input id="apiKey" placeholder="API Key，可留空" />
+          <select id="apiStylePreset"></select>
+          <input id="apiCount" type="number" min="1" max="30" value="8" />
+          <input id="apiResponsePath" placeholder="响应路径，例如 foods 或 choices.0.message.content" value="foods" />
+        </div>
+        <textarea id="apiHeaders" spellcheck="false" placeholder='请求头 JSON，例如 {"X-Model":"food"}'></textarea>
+        <textarea id="apiBody" spellcheck="false"></textarea>
+        <div class="apiActions">
+          <button id="apiReplaceBtn">生成并替换菜单</button>
+          <button id="apiAppendBtn">生成并追加菜单</button>
+        </div>
+        <div class="apiStatus" id="apiStatus">可用占位符：{style} {count} {foodsJson} {foodsArray} {schema}</div>
+      </section>
       <div class="foodList" id="foodList"></div>
     </aside>
   </div>

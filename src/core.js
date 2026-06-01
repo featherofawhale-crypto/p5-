@@ -29,6 +29,34 @@ const COLOR_SETS = [
   ['#a0c4ff', '#bdb2ff', '#fb5607', '#0b090a'],
 ];
 
+export const API_STYLE_PRESETS = [
+  {
+    id: 'low-poly-comic',
+    name: '低多边形美漫',
+    prompt: 'low-poly American comic food illustration, bold black ink, angular facets, dramatic red white black palette, readable food silhouette',
+  },
+  {
+    id: 'persona-punk',
+    name: '怪盗红黑冲击',
+    prompt: 'stylish phantom-thief game UI food concept, red black white, sharp diagonal composition, high contrast, dramatic reveal card',
+  },
+  {
+    id: 'pixel-arcade',
+    name: '像素街机',
+    prompt: '16-bit arcade food icons, punchy colors, crisp silhouette, game item style, readable at small size',
+  },
+  {
+    id: 'manga-bento',
+    name: '漫画便当',
+    prompt: 'Japanese manga bento food illustration, thick ink lines, screentone texture, expressive comic impact, clear dish identity',
+  },
+];
+
+const DEFAULT_API_BODY_TEMPLATE = JSON.stringify({
+  prompt: '{style}\nGenerate {count} Chinese dinner options. Return JSON only with an array named foods. Each item must have name, rarity(N/R/SR/SSR), calories, health, sugarSafe.',
+  currentFoods: '{foodsJson}',
+}, null, 2);
+
 export function classifyFood(name) {
   if (/面|粉|米线|河粉|拉面|热干|担担|云吞/.test(name)) return 'noodle';
   if (/饭|粥|煲仔|卤肉|炒饭|便当|碗/.test(name)) return 'rice';
@@ -169,6 +197,57 @@ export function deleteFood(foods, id) {
 
 export function randomFood(foods, random = Math.random) {
   return foods[Math.floor(random() * foods.length)] ?? foods[0];
+}
+
+function parseJsonObject(text, fallback = {}) {
+  if (!String(text ?? '').trim()) return fallback;
+  const parsed = JSON.parse(text);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('JSON must be an object');
+  return parsed;
+}
+
+function getPathValue(value, path) {
+  if (!path) return value;
+  return String(path).split('.').filter(Boolean).reduce((current, key) => current?.[key], value);
+}
+
+function renderTemplate(template, vars) {
+  return String(template ?? '').replace(/\{style\}|\{count\}|\{foodsJson\}|\{foodsArray\}|\{schema\}/g, (token) => vars[token.slice(1, -1)] ?? '');
+}
+
+export function buildApiGenerationRequest(config, foods = []) {
+  const preset = API_STYLE_PRESETS.find((item) => item.id === config?.stylePresetId) ?? API_STYLE_PRESETS[0];
+  const headers = {
+    'Content-Type': 'application/json',
+    ...parseJsonObject(config?.headersJson, {}),
+  };
+  if (config?.apiKey) headers.Authorization = `Bearer ${config.apiKey}`;
+  const vars = {
+    style: JSON.stringify(preset.prompt).slice(1, -1),
+    count: String(config?.count || 8),
+    foodsJson: JSON.stringify(JSON.stringify(foods.map((food) => normalizeFood(food, food.id)))).slice(1, -1),
+    foodsArray: JSON.stringify(foods.map((food) => normalizeFood(food, food.id))),
+    schema: JSON.stringify('Return JSON: {"foods":[{"name":"string","rarity":"N|R|SR|SSR","calories":number,"health":number,"sugarSafe":boolean}]}').slice(1, -1),
+  };
+  return {
+    url: String(config?.endpoint ?? '').trim(),
+    options: {
+      method: String(config?.method || 'POST').toUpperCase(),
+      headers,
+      body: renderTemplate(config?.bodyTemplate || DEFAULT_API_BODY_TEMPLATE, vars),
+    },
+    preset,
+  };
+}
+
+export function extractFoodsFromApiResponse(response, responsePath = 'foods') {
+  let value = getPathValue(response, responsePath);
+  if (typeof value === 'string') {
+    const parsed = JSON.parse(value);
+    value = Array.isArray(parsed) ? parsed : parsed.foods;
+  }
+  if (!Array.isArray(value)) throw new Error('API response did not contain a food array');
+  return value.map((food, index) => normalizeFood({ ...food, id: index + 1 }, index + 1));
 }
 
 export function foodArt(food, size = 160) {

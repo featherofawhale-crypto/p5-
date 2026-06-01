@@ -1,7 +1,10 @@
 import {
+  API_STYLE_PRESETS,
+  buildApiGenerationRequest,
   buildFoods,
   createFood,
   deleteFood,
+  extractFoodsFromApiResponse,
   foodArt,
   parseFoods,
   randomFood,
@@ -9,6 +12,16 @@ import {
 } from './core.js';
 
 const STORAGE_KEY = 'dinner-slot-foods-v2';
+const API_CONFIG_KEY = 'dinner-slot-api-config-v1';
+const DEFAULT_API_BODY = `{
+  "model": "gpt-4o-mini",
+  "messages": [
+    {"role": "system", "content": "{schema}"},
+    {"role": "user", "content": "Style preset: {style}\\nGenerate {count} dinner blind-box foods. Current menu JSON: {foodsJson}"}
+  ],
+  "temperature": 0.9,
+  "response_format": {"type": "json_object"}
+}`;
 const BGM = [
   { name: 'Last Surprise', src: 'assets/last_surprise.m4a' },
   { name: 'Wake Up Get Up Get', src: 'assets/wake_up_get_up.m4a' },
@@ -43,6 +56,18 @@ function loadFoods() {
 
 function saveFoods() {
   localStorage.setItem(STORAGE_KEY, serializeFoods(foods));
+}
+
+function loadApiConfig() {
+  try {
+    return { bodyTemplate: DEFAULT_API_BODY, responsePath: 'foods', count: 8, method: 'POST', stylePresetId: API_STYLE_PRESETS[0].id, ...JSON.parse(localStorage.getItem(API_CONFIG_KEY) || '{}') };
+  } catch {
+    return { bodyTemplate: DEFAULT_API_BODY, responsePath: 'foods', count: 8, method: 'POST', stylePresetId: API_STYLE_PRESETS[0].id };
+  }
+}
+
+function saveApiConfig(config) {
+  localStorage.setItem(API_CONFIG_KEY, JSON.stringify(config));
 }
 
 function audioCtx() {
@@ -211,6 +236,59 @@ function renderAdmin() {
   </div>`).join('');
 }
 
+function initApiPanel() {
+  $('apiStylePreset').innerHTML = API_STYLE_PRESETS.map((preset) => `<option value="${preset.id}">${preset.name}</option>`).join('');
+  const config = loadApiConfig();
+  $('apiEndpoint').value = config.endpoint || '';
+  $('apiMethod').value = config.method || 'POST';
+  $('apiKey').value = config.apiKey || '';
+  $('apiStylePreset').value = config.stylePresetId || API_STYLE_PRESETS[0].id;
+  $('apiCount').value = config.count || 8;
+  $('apiResponsePath').value = config.responsePath || 'foods';
+  $('apiHeaders').value = config.headersJson || '';
+  $('apiBody').value = config.bodyTemplate || DEFAULT_API_BODY;
+}
+
+function readApiPanel() {
+  return {
+    endpoint: $('apiEndpoint').value.trim(),
+    method: $('apiMethod').value,
+    apiKey: $('apiKey').value.trim(),
+    stylePresetId: $('apiStylePreset').value,
+    count: Number($('apiCount').value || 8),
+    responsePath: $('apiResponsePath').value.trim() || 'foods',
+    headersJson: $('apiHeaders').value.trim(),
+    bodyTemplate: $('apiBody').value,
+  };
+}
+
+async function generateFoodsFromApi(mode) {
+  const config = readApiPanel();
+  saveApiConfig(config);
+  if (!config.endpoint) {
+    $('apiStatus').textContent = '请先填写 API URL。';
+    return;
+  }
+  try {
+    $('apiStatus').textContent = '正在请求 API...';
+    const request = buildApiGenerationRequest(config, foods);
+    if (request.options.method === 'GET') delete request.options.body;
+    const response = await fetch(request.url, request.options);
+    const text = await response.text();
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${text.slice(0, 180)}`);
+    const payload = JSON.parse(text);
+    const generated = extractFoodsFromApiResponse(payload, config.responsePath);
+    foods = mode === 'append' ? [...foods, ...generated.map((food, index) => ({ ...food, id: foods.length + index + 1 }))] : generated;
+    saveFoods();
+    renderAdmin();
+    drawReels([randomFood(foods), randomFood(foods), randomFood(foods)]);
+    drawResult(foods[0]);
+    $('apiStatus').textContent = `已生成 ${generated.length} 个食物，使用预设：${request.preset.name}`;
+  } catch (error) {
+    $('apiStatus').textContent = `生成失败：${error.message}`;
+  }
+}
+
 function initBackground() {
   for (let i = 0; i < 34; i += 1) {
     const line = document.createElement('i');
@@ -295,10 +373,13 @@ function wireEvents() {
     drawReels([randomFood(foods), randomFood(foods), randomFood(foods)]);
     drawResult(foods[0]);
   });
+  $('apiReplaceBtn').addEventListener('click', () => generateFoodsFromApi('replace'));
+  $('apiAppendBtn').addEventListener('click', () => generateFoodsFromApi('append'));
 }
 
 initBackground();
 wireEvents();
+initApiPanel();
 renderAdmin();
 drawReels([foods[20], foods[43], foods[8]]);
 drawResult(foods[0]);

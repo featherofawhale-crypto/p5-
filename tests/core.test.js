@@ -2,9 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   DEFAULT_FOOD_NAMES,
+  API_STYLE_PRESETS,
+  buildApiGenerationRequest,
   buildFoods,
   createFood,
   deleteFood,
+  extractFoodsFromApiResponse,
   foodArt,
   normalizeFood,
 } from '../src/core.js';
@@ -78,4 +81,42 @@ test('foodArt uses recognizable food-specific silhouettes', () => {
   for (const [name, kind] of cases) {
     assert.match(foodArt({ id: 1, name, rarity: 'R', calories: 500, health: 50, sugarSafe: false }), new RegExp(`data-food-kind="${kind}"`));
   }
+});
+
+test('buildApiGenerationRequest applies built-in style preset and templates request body', () => {
+  const foods = buildFoods().slice(0, 2);
+  const request = buildApiGenerationRequest({
+    endpoint: 'https://example.test/generate',
+    apiKey: 'sk-test',
+    stylePresetId: 'low-poly-comic',
+    count: 4,
+    headersJson: '{"X-App":"dinner"}',
+    bodyTemplate: '{"prompt":"{style} generate {count} foods from {foodsJson}"}',
+  }, foods);
+
+  assert.equal(API_STYLE_PRESETS.some((preset) => preset.id === 'low-poly-comic'), true);
+  assert.equal(request.url, 'https://example.test/generate');
+  assert.equal(request.options.method, 'POST');
+  assert.equal(request.options.headers.Authorization, 'Bearer sk-test');
+  assert.equal(request.options.headers['X-App'], 'dinner');
+  assert.match(JSON.parse(request.options.body).prompt, /low-poly American comic/);
+  assert.match(JSON.parse(request.options.body).prompt, /generate 4 foods/);
+});
+
+test('extractFoodsFromApiResponse accepts custom response paths and normalizes foods', () => {
+  const response = {
+    data: {
+      menu: [
+        { name: 'AI 牛肉面', rarity: 'SR', calories: 620, health: 66, sugarSafe: false },
+        { name: 'AI 控糖蒸鱼', rarity: 'SSR', calories: 300, health: 94, sugarSafe: true },
+      ],
+    },
+  };
+
+  const foods = extractFoodsFromApiResponse(response, 'data.menu');
+
+  assert.equal(foods.length, 2);
+  assert.equal(foods[0].id, 1);
+  assert.equal(foods[1].name, 'AI 控糖蒸鱼');
+  assert.equal(foods[1].sugarSafe, true);
 });
