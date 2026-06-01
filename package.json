@@ -1,6 +1,7 @@
 {
   "name": "p5-lottery-blind-box",
-  "version": "0.1.0",
+  "version": "0.2.1",
+  "type": "module",
   "private": true,
   "scripts": {
     "start": "py -m http.server 5173",
