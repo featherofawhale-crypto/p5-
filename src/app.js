@@ -41,6 +41,8 @@ let spinning = false;
 let bgmIndex = 0;
 let muted = false;
 let ctx;
+let masterGain;
+let compressor;
 const sampleCache = new Map();
 
 const bgm = $('bgm');
@@ -72,7 +74,19 @@ function saveApiConfig(config) {
 }
 
 function audioCtx() {
-  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  if (!ctx) {
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = ctx.createGain();
+    compressor = ctx.createDynamicsCompressor();
+    compressor.threshold.value = -18;
+    compressor.knee.value = 18;
+    compressor.ratio.value = 4;
+    compressor.attack.value = 0.006;
+    compressor.release.value = 0.18;
+    masterGain.gain.value = 0.92;
+    masterGain.connect(compressor);
+    compressor.connect(ctx.destination);
+  }
   if (ctx.state === 'suspended') ctx.resume();
   return ctx;
 }
@@ -88,12 +102,12 @@ function tone(freq, dur = 0.1, type = 'square', gain = 0.04, slide = 0) {
   g.gain.setValueAtTime(gain, c.currentTime);
   g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + dur);
   o.connect(g);
-  g.connect(c.destination);
+  g.connect(masterGain);
   o.start();
   o.stop(c.currentTime + dur);
 }
 
-function noise(dur = 0.14, gain = 0.045) {
+function noise(dur = 0.14, gain = 0.045, filter = 0, filterType = 'bandpass') {
   if (muted) return;
   const c = audioCtx();
   const buffer = c.createBuffer(1, c.sampleRate * dur, c.sampleRate);
@@ -103,8 +117,17 @@ function noise(dur = 0.14, gain = 0.045) {
   const g = c.createGain();
   g.gain.value = gain;
   src.buffer = buffer;
-  src.connect(g);
-  g.connect(c.destination);
+  if (filter) {
+    const biquad = c.createBiquadFilter();
+    biquad.type = filterType;
+    biquad.frequency.setValueAtTime(filter, c.currentTime);
+    biquad.Q.value = filterType === 'bandpass' ? 1.8 : 0.8;
+    src.connect(biquad);
+    biquad.connect(g);
+  } else {
+    src.connect(g);
+  }
+  g.connect(masterGain);
   src.start();
 }
 
@@ -124,7 +147,7 @@ function playSample(name, volume = 0.32, rate = 1) {
 
 function duckMusic(amount = 0.45, ms = 680) {
   if (muted) return;
-  const base = 0.18;
+  const base = Number($('volumeSlider').value || 18) / 100;
   bgm.volume = Math.max(0.05, base * amount);
   setTimeout(() => {
     if (!muted) bgm.volume = base;
@@ -136,7 +159,7 @@ function playSoundLayer(layer, offset = 0, pitchOffset = 0) {
     if (muted) return;
     if (layer.role === 'impact' && layer.band === 'mid') duckMusic(0.55, 420);
     if (layer.source === 'sample') playSample(layer.sample, layer.gain, layer.rate || 1);
-    if (layer.source === 'noise') noise(layer.dur, layer.gain);
+    if (layer.source === 'noise') noise(layer.dur, layer.gain, layer.filter || 0, layer.filterType || 'bandpass');
     if (layer.source === 'tone') {
       const freq = layer.freq + (layer.pitchStep ? pitchOffset * layer.pitchStep : 0);
       tone(freq, layer.dur, layer.wave, layer.gain, layer.slide || 0);
@@ -249,9 +272,9 @@ async function startRoll() {
   document.querySelectorAll('.reel').forEach((node) => node.classList.add('locked'));
   sfx.lock();
   await delay(380);
+  clearInterval(inter);
   sfx.revealCharge();
   await delay(520);
-  clearInterval(inter);
   $('flash').classList.remove('go');
   $('flash').classList.add('burst');
   drawResult(final);

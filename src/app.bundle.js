@@ -44,19 +44,20 @@
     tick: [
       { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'tick', gain: 0.16 },
       { at: 8, role: 'sparkle', band: 'high', source: 'tone', freq: 520, dur: 0.035, wave: 'square', gain: 0.014, pitchStep: 14 },
-    ],
-    whoosh: [
-      { at: -80, role: 'riser', band: 'mid', source: 'noise', dur: 0.42, gain: 0.052 },
-      { at: 0, role: 'riser', band: 'low', source: 'tone', freq: 95, dur: 0.38, wave: 'sawtooth', gain: 0.028, slide: 920 },
-      { at: 120, role: 'sparkle', band: 'high', source: 'tone', freq: 1520, dur: 0.08, wave: 'triangle', gain: 0.018, slide: 420 },
-    ],
+  ],
+  whoosh: [
+    { at: -120, role: 'riser', band: 'mid', source: 'noise', dur: 0.48, gain: 0.058, filter: 760, filterType: 'bandpass' },
+    { at: -20, role: 'riser', band: 'low', source: 'tone', freq: 82, dur: 0.44, wave: 'sawtooth', gain: 0.034, slide: 1080 },
+    { at: 110, role: 'sparkle', band: 'high', source: 'tone', freq: 1520, dur: 0.08, wave: 'triangle', gain: 0.022, slide: 620 },
+  ],
     slash: [
       { at: -45, role: 'riser', band: 'high', source: 'noise', dur: 0.16, gain: 0.072 },
       { at: 0, role: 'impact', band: 'mid', source: 'tone', freq: 1320, dur: 0.08, wave: 'sawtooth', gain: 0.034, slide: 680 },
       { at: 60, role: 'tail', band: 'high', source: 'tone', freq: 2400, dur: 0.08, wave: 'triangle', gain: 0.016 },
     ],
-    warning: [
-      { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'warning', gain: 0.34 },
+  warning: [
+    { at: -220, role: 'riser', band: 'mid', source: 'tone', freq: 180, dur: 0.28, wave: 'sawtooth', gain: 0.022, slide: 520 },
+    { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'warning', gain: 0.34 },
       { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 86, dur: 0.42, wave: 'sawtooth', gain: 0.046, slide: -24 },
       { at: 150, role: 'sparkle', band: 'high', source: 'tone', freq: 980, dur: 0.11, wave: 'square', gain: 0.026 },
       { at: 430, role: 'sparkle', band: 'high', source: 'tone', freq: 740, dur: 0.09, wave: 'square', gain: 0.018 },
@@ -66,17 +67,19 @@
       { at: 0, role: 'impact', band: 'low', source: 'tone', freq: 118, dur: 0.08, wave: 'square', gain: 0.056 },
       { at: 82, role: 'sub', band: 'low', source: 'tone', freq: 68, dur: 0.2, wave: 'sawtooth', gain: 0.064 },
       { at: 130, role: 'tail', band: 'mid', source: 'sample', sample: 'click', gain: 0.14 },
-    ],
-    reveal: [
-      { at: -520, role: 'riser', band: 'mid', source: 'noise', dur: 0.7, gain: 0.04 },
-      { at: -260, role: 'riser', band: 'high', source: 'tone', freq: 420, dur: 0.34, wave: 'sawtooth', gain: 0.022, slide: 1180 },
-      { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 54, dur: 0.48, wave: 'sawtooth', gain: 0.092, slide: -16 },
-      { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.48 },
-      { at: 20, role: 'impact', band: 'mid', source: 'noise', dur: 0.42, gain: 0.072 },
-      { at: 90, role: 'sparkle', band: 'high', source: 'tone', freq: 1500, dur: 0.1, wave: 'triangle', gain: 0.036, slide: 520 },
-      { at: 260, role: 'sparkle', band: 'high', source: 'tone', freq: 2250, dur: 0.08, wave: 'sine', gain: 0.024 },
-      { at: 520, role: 'tail', band: 'mid', source: 'tone', freq: 760, dur: 0.26, wave: 'sine', gain: 0.018, slide: -220 },
-    ],
+  ],
+  reveal: [
+    { at: -680, role: 'riser', band: 'mid', source: 'noise', dur: 0.86, gain: 0.045, filter: 620, filterType: 'bandpass' },
+    { at: -420, role: 'riser', band: 'high', source: 'tone', freq: 360, dur: 0.5, wave: 'sawtooth', gain: 0.026, slide: 1560 },
+    { at: -90, role: 'impact', band: 'mid', source: 'sample', sample: 'tick', gain: 0.18, rate: 0.72 },
+    { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 48, dur: 0.62, wave: 'sawtooth', gain: 0.12, slide: -14 },
+    { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.58 },
+    { at: 18, role: 'impact', band: 'mid', source: 'noise', dur: 0.5, gain: 0.09, filter: 900, filterType: 'lowpass' },
+    { at: 82, role: 'sparkle', band: 'high', source: 'tone', freq: 1450, dur: 0.12, wave: 'triangle', gain: 0.044, slide: 720 },
+    { at: 230, role: 'sparkle', band: 'high', source: 'tone', freq: 2250, dur: 0.09, wave: 'sine', gain: 0.03 },
+    { at: 380, role: 'sparkle', band: 'high', source: 'tone', freq: 2850, dur: 0.08, wave: 'sine', gain: 0.022 },
+    { at: 610, role: 'tail', band: 'mid', source: 'tone', freq: 760, dur: 0.34, wave: 'sine', gain: 0.022, slide: -260 },
+  ],
     shine: [
       { at: 0, role: 'sparkle', band: 'high', source: 'tone', freq: 1500, dur: 0.08, wave: 'sine', gain: 0.024 },
       { at: 70, role: 'sparkle', band: 'high', source: 'tone', freq: 1900, dur: 0.08, wave: 'sine', gain: 0.022 },
@@ -139,6 +142,15 @@
     };
   }
   function classifyFood(name) {
+    if (/面|粉|河粉|米线|拉面|担担|热干|刀削/.test(name)) return 'noodle';
+    if (/饭|炒饭|便当|盖饭|煲仔|寿司|丼|粥/.test(name)) return 'rice';
+    if (/饺|包|烧麦|锅贴|馄饨|肠粉|肉夹馍|煎饼/.test(name)) return 'dumpling';
+    if (/鱼|虾|蟹|海鲜|刺身|鳗|龙虾/.test(name)) return 'fish';
+    if (/火锅|冒菜|麻辣烫|锅|汤/.test(name)) return 'hotpot';
+    if (/串|烤|烧烤|羊肉|牛排|鸡翅|鸡腿/.test(name)) return 'skewer';
+    if (/豆腐|豆皮|豆干/.test(name)) return 'tofu';
+    if (/肉|鸡|牛|羊|猪|排骨|叉烧|里脊|扣肉|黄焖/.test(name)) return 'meat';
+    if (/沙拉|西兰花|牛油果|时蔬|蔬菜/.test(name)) return 'salad';
     if (/面|粉|米线|河粉|拉面|热干|担担|云吞/.test(name)) return 'noodle';
     if (/饭|粥|煲仔|卤肉|炒饭|便当|碗/.test(name)) return 'rice';
     if (/饺|包|烧麦|锅贴|肠粉|肉夹馍|饼/.test(name)) return 'dumpling';
@@ -309,9 +321,9 @@
         <rect x="8" y="10" width="140" height="136" rx="8" fill="#fff" stroke="#111" stroke-width="6"/>
         <polygon points="16,20 148,12 132,45 38,40" fill="${colors[0]}" stroke="#111" stroke-width="4" opacity=".88"/>
         <rect x="25" y="36" width="110" height="96" rx="10" fill="${plate}" stroke="#111" stroke-width="5"/>
-        <image href="${foodIconPath(kind)}" x="38" y="44" width="84" height="84" preserveAspectRatio="xMidYMid meet" filter="url(#ink${food.id})"/>
+        <g filter="url(#ink${food.id})">${foodShape(kind, colors)}</g>
         <circle cx="118" cy="42" r="13" fill="${rareStroke}" stroke="#111" stroke-width="4"/>
-        <text x="80" y="140" text-anchor="middle" font-size="13" font-weight="900" fill="#111">LOW POLY</text>
+        <text x="80" y="140" text-anchor="middle" font-size="12" font-weight="900" fill="#111">${kind.toUpperCase()}</text>
       </svg>`;
   }
   function serializeFoods(foods) {
@@ -329,6 +341,8 @@
   let bgmIndex = 0;
   let muted = false;
   let ctx;
+  let masterGain;
+  let compressor;
   const sampleCache = new Map();
   const bgm = $('bgm');
   bgm.volume = 0.18;
@@ -355,7 +369,19 @@
     localStorage.setItem(API_CONFIG_KEY, JSON.stringify(config));
   }
   function audioCtx() {
-    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!ctx) {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = ctx.createGain();
+      compressor = ctx.createDynamicsCompressor();
+      compressor.threshold.value = -18;
+      compressor.knee.value = 18;
+      compressor.ratio.value = 4;
+      compressor.attack.value = 0.006;
+      compressor.release.value = 0.18;
+      masterGain.gain.value = 0.92;
+      masterGain.connect(compressor);
+      compressor.connect(ctx.destination);
+    }
     if (ctx.state === 'suspended') ctx.resume();
     return ctx;
   }
@@ -370,11 +396,11 @@
     g.gain.setValueAtTime(gain, c.currentTime);
     g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + dur);
     o.connect(g);
-    g.connect(c.destination);
+    g.connect(masterGain);
     o.start();
     o.stop(c.currentTime + dur);
   }
-  function noise(dur = 0.14, gain = 0.045) {
+  function noise(dur = 0.14, gain = 0.045, filter = 0, filterType = 'bandpass') {
     if (muted) return;
     const c = audioCtx();
     const buffer = c.createBuffer(1, c.sampleRate * dur, c.sampleRate);
@@ -384,8 +410,17 @@
     const g = c.createGain();
     g.gain.value = gain;
     src.buffer = buffer;
-    src.connect(g);
-    g.connect(c.destination);
+    if (filter) {
+      const biquad = c.createBiquadFilter();
+      biquad.type = filterType;
+      biquad.frequency.setValueAtTime(filter, c.currentTime);
+      biquad.Q.value = filterType === 'bandpass' ? 1.8 : 0.8;
+      src.connect(biquad);
+      biquad.connect(g);
+    } else {
+      src.connect(g);
+    }
+    g.connect(masterGain);
     src.start();
   }
   function playSample(name, volume = 0.32, rate = 1) {
@@ -403,7 +438,7 @@
   }
   function duckMusic(amount = 0.45, ms = 680) {
     if (muted) return;
-    const base = 0.18;
+    const base = Number($('volumeSlider').value || 18) / 100;
     bgm.volume = Math.max(0.05, base * amount);
     setTimeout(() => {
       if (!muted) bgm.volume = base;
@@ -414,7 +449,7 @@
       if (muted) return;
       if (layer.role === 'impact' && layer.band === 'mid') duckMusic(0.55, 420);
       if (layer.source === 'sample') playSample(layer.sample, layer.gain, layer.rate || 1);
-      if (layer.source === 'noise') noise(layer.dur, layer.gain);
+      if (layer.source === 'noise') noise(layer.dur, layer.gain, layer.filter || 0, layer.filterType || 'bandpass');
       if (layer.source === 'tone') {
         const freq = layer.freq + (layer.pitchStep ? pitchOffset * layer.pitchStep : 0);
         tone(freq, layer.dur, layer.wave, layer.gain, layer.slide || 0);
@@ -517,9 +552,9 @@
     document.querySelectorAll('.reel').forEach((node) => node.classList.add('locked'));
     sfx.lock();
     await delay(380);
+    clearInterval(inter);
     sfx.revealCharge();
     await delay(520);
-    clearInterval(inter);
     $('flash').classList.remove('go');
     $('flash').classList.add('burst');
     drawResult(final);

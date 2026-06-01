@@ -5,6 +5,7 @@ import {
   API_STYLE_PRESETS,
   buildApiGenerationRequest,
   buildFoods,
+  classifyFood,
   createFood,
   deleteFood,
   extractFoodsFromApiResponse,
@@ -63,8 +64,8 @@ test('foodArt returns low-poly comic svg markup without emoji art', () => {
   const art = foodArt({ id: 8, name: '麻辣香锅', rarity: 'SSR', calories: 800, health: 45, sugarSafe: false });
 
   assert.match(art, /<svg/);
-  assert.match(art, /<image/);
-  assert.match(art, /LOW POLY/);
+  assert.match(art, /<polygon|<ellipse|<rect|<path/);
+  assert.doesNotMatch(art, /<image/);
   assert.doesNotMatch(art, /🍜|🥘|🍚|🥟|🍲|🥗|🍛|🔥|🥢|🍖|🦀|🍗/);
 });
 
@@ -91,6 +92,22 @@ test('foodIconPath maps food kinds to local Twemoji SVG assets', () => {
   assert.equal(foodIconPath('plate'), 'assets/food/twemoji/1f37d.svg');
 });
 
+test('classifyFood maps readable Chinese names to matching visual categories', () => {
+  assert.equal(classifyFood('麻婆豆腐'), 'tofu');
+  assert.equal(classifyFood('牛肉面'), 'noodle');
+  assert.equal(classifyFood('水饺'), 'dumpling');
+  assert.equal(classifyFood('清蒸鲈鱼'), 'fish');
+  assert.equal(classifyFood('红烧肉'), 'meat');
+});
+
+test('foodArt uses generated low-poly shapes instead of generic image tags', () => {
+  const art = foodArt({ id: 1, name: '麻婆豆腐', rarity: 'R', calories: 280, health: 82, sugarSafe: true });
+
+  assert.match(art, /data-food-kind="tofu"/);
+  assert.match(art, />TOFU</);
+  assert.doesNotMatch(art, /<image/);
+});
+
 test('getSoundCuePlan layers editorial sound roles across frequency bands', () => {
   const reveal = getSoundCuePlan('reveal');
   const roles = new Set(reveal.map((layer) => layer.role));
@@ -102,6 +119,7 @@ test('getSoundCuePlan layers editorial sound roles across frequency bands', () =
   assert.equal(bands.has('high'), true);
   assert.equal(reveal.some((layer) => layer.at < 0), true);
   assert.equal(reveal.some((layer) => layer.at > 0), true);
+  assert.equal(reveal.length >= 10, true);
 });
 
 test('buildApiGenerationRequest applies built-in style preset and templates request body', () => {

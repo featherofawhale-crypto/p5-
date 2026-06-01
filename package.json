@@ -1,6 +1,6 @@
 {
   "name": "p5-lottery-blind-box",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "type": "module",
   "private": true,
   "scripts": {
