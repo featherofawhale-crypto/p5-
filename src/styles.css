@@ -1,11 +1,12 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;overflow:hidden;background:#060606;color:#fff;font-family:Impact,"Arial Black","PingFang SC","Microsoft YaHei",sans-serif}
+html,body{margin:0;min-height:100%;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;background:#060606;color:#fff;font-family:Impact,"Arial Black","PingFang SC","Microsoft YaHei",sans-serif}
+html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0}
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer}
-#app{position:relative;width:100vw;height:100dvh;overflow:hidden;background:radial-gradient(circle at 22% 14%,rgba(255,255,255,.2),transparent 16%),radial-gradient(circle at 80% 12%,rgba(255,214,10,.24),transparent 19%),linear-gradient(135deg,#050505 0%,#101010 34%,#d90429 35%,#ef233c 48%,#111 49%,#000 100%)}
+#app{position:relative;width:100vw;min-height:100dvh;overflow:visible;background:radial-gradient(circle at 22% 14%,rgba(255,255,255,.2),transparent 16%),radial-gradient(circle at 80% 12%,rgba(255,214,10,.24),transparent 19%),linear-gradient(135deg,#050505 0%,#101010 34%,#d90429 35%,#ef233c 48%,#111 49%,#000 100%)}
 .slash-white{position:absolute;left:-30vw;top:-20vh;width:28vw;height:150vh;background:rgba(255,255,255,.92);transform:rotate(18deg);animation:slashFloat 5s infinite}
 .ring{position:absolute;right:-95px;top:-95px;width:285px;height:285px;border-radius:50%;border:30px solid rgba(255,255,255,.82);animation:spin 13s linear infinite}
-.screen{position:relative;z-index:2;max-width:500px;height:100%;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(14px + env(safe-area-inset-bottom));display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.screen{position:relative;z-index:2;max-width:500px;min-height:100dvh;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom));display:flex;flex-direction:column;overflow:visible;scrollbar-width:none}
 .screen::-webkit-scrollbar{width:0;height:0}
 .top{position:relative;display:block;flex:0 0 auto;min-height:154px;padding:10px 68px 14px 10px;border:3px solid #fff;border-radius:10px;background:linear-gradient(135deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.72) 54%,rgba(230,0,18,.78) 55%,rgba(230,0,18,.42) 100%);box-shadow:8px 8px 0 #e60012;clip-path:polygon(0 0,100% 0,96% 100%,0 92%)}
 .label{display:inline-block;background:#fff;color:#000;padding:6px 10px;font-size:12px;letter-spacing:.18em;font-weight:900;transform:skewX(-12deg)}
