@@ -15,8 +15,8 @@ export const DEFAULT_FOOD_NAMES = [
   '咖喱猪排饭', '韩式拌饭', '部队锅', '越南河粉', '泰式炒河粉', '冬阴功汤',
   '烤冷面', '东北乱炖', '新疆大盘鸡', '羊肉泡馍', '胡辣汤', '桂林米粉',
   '肠旺面', '过桥米线', '潮汕牛肉丸', '潮汕砂锅粥', '帝王蟹盛宴', '和牛烧肉',
-  '龙虾伊面', '佛跳墙', '烤鸭全套', '海鲜大咖', '黑松露牛排', 'SSR深夜火锅',
-  '传说级烧烤', '命运之麻辣香锅',
+  '龙虾伊面', '佛跳墙', '烤鸭全套', '海鲜大咖', '黑松露牛排', '深夜火锅',
+  '炭火烧烤', '麻辣香锅',
 ];
 
 export const EXTRA_FOOD_NAMES = [
@@ -33,7 +33,7 @@ export const EXTRA_FOOD_NAMES = [
   '印度黄油鸡', '咖喱牛腩', '墨西哥卷饼', '意式肉酱面', '奶油蘑菇意面', '玛格丽特披萨', '海鲜披萨',
   '凯撒沙拉', '金枪鱼沙拉', '鸡胸藜麦碗', '牛油果虾仁沙拉', '照烧三文鱼', '香煎鳕鱼', '清炒时蔬',
   '蒜蓉西兰花', '番茄炒蛋', '紫菜蛋花汤', '玉米排骨汤', '老鸭粉丝汤', '皮蛋瘦肉粥', '南瓜小米粥',
-  '红豆双皮奶', '杨枝甘露', '芋圆仙草', '炸鸡汉堡', '芝士牛肉堡', '鳗鱼寿司卷', '三文鱼刺身', '寿喜烧',
+  '番茄牛肉烩饭', '香菇滑鸡饭', '青椒肉丝盖饭', '脆皮炸鸡饭', '芝士牛肉焗饭', '鳗鱼寿司卷', '三文鱼刺身', '寿喜烧',
 ];
 
 export const FOOD_POOL_NAMES = [...DEFAULT_FOOD_NAMES, ...EXTRA_FOOD_NAMES];
@@ -276,8 +276,17 @@ export function pickRarity(name, index = 0) {
   return 'N';
 }
 
+export function cleanFoodName(value) {
+  return String(value ?? '')
+    .trim()
+    .replace(/^(SSR|SR|R|N)\s*/i, '')
+    .replace(/^(传说级|命运之|AI\s*|低多边形|美漫|P5风格|P5|怪盗)/i, '')
+    .replace(/套餐$/u, '')
+    .trim();
+}
+
 export function normalizeFood(input, fallbackId = 1) {
-  const name = String(input?.name ?? '').trim() || '未命名晚餐';
+  const name = cleanFoodName(input?.name) || '未命名食物';
   const rarity = RARITIES.has(input?.rarity) ? input.rarity : 'SSR';
   return {
     id: clamp(input?.id ?? fallbackId, 1, 999999),
@@ -383,12 +392,19 @@ export function foodArt(food, size = 160) {
         <filter id="ink${food.id}" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="5" dy="5" stdDeviation="0" flood-color="#000" flood-opacity=".9"/>
         </filter>
+        <clipPath id="dishClip${food.id}">
+          <polygon points="33,42 126,38 132,118 72,130 29,109"/>
+        </clipPath>
       </defs>
       <rect x="8" y="10" width="140" height="136" rx="8" fill="#fff" stroke="#111" stroke-width="6"/>
       <polygon points="16,20 148,12 132,45 38,40" fill="${colors[0]}" stroke="#111" stroke-width="4" opacity=".88"/>
       <rect x="25" y="36" width="110" height="96" rx="10" fill="${plate}" stroke="#111" stroke-width="5"/>
-      <g filter="url(#ink${food.id})">
+      <g filter="url(#ink${food.id})" clip-path="url(#dishClip${food.id})">
         <image href="${foodIconPath(kind)}" x="36" y="42" width="88" height="88" preserveAspectRatio="xMidYMid meet"/>
+        <polygon class="foodFacet" points="33,42 75,42 58,78 34,88" fill="${colors[0]}" opacity=".22"/>
+        <polygon class="foodFacet" points="76,41 130,39 112,80 58,78" fill="${colors[1]}" opacity=".2"/>
+        <polygon class="foodFacet" points="35,88 76,79 72,130 29,109" fill="#ffffff" opacity=".25"/>
+        <polygon class="foodFacet" points="78,80 132,118 72,130" fill="${colors[2]}" opacity=".18"/>
       </g>
       <circle cx="118" cy="42" r="13" fill="${rareStroke}" stroke="#111" stroke-width="4"/>
       <text x="80" y="140" text-anchor="middle" font-size="12" font-weight="900" fill="#111">${kind.toUpperCase()}</text>

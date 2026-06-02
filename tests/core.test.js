@@ -6,6 +6,7 @@ import {
   API_STYLE_PRESETS,
   buildApiGenerationRequest,
   buildFoods,
+  cleanFoodName,
   classifyFood,
   createFood,
   deleteFood,
@@ -46,6 +47,14 @@ test('normalizeFood clamps admin values and keeps sugar flag boolean', () => {
   });
 });
 
+test('cleanFoodName removes game labels from menu names', () => {
+  assert.equal(cleanFoodName('SSR深夜火锅'), '深夜火锅');
+  assert.equal(cleanFoodName('传说级烧烤'), '烧烤');
+  assert.equal(cleanFoodName('命运之麻辣香锅'), '麻辣香锅');
+  assert.equal(cleanFoodName('低多边形牛肉面'), '牛肉面');
+  assert.equal(cleanFoodName('肉夹馍套餐'), '肉夹馍');
+});
+
 test('createFood appends a normalized admin item with next id', () => {
   const foods = [{ id: 4, name: '牛肉面', rarity: 'R', calories: 600, health: 52, sugarSafe: false }];
 
@@ -53,7 +62,7 @@ test('createFood appends a normalized admin item with next id', () => {
 
   assert.equal(next.length, 2);
   assert.equal(next[1].id, 5);
-  assert.equal(next[1].name, '控糖蒸鱼套餐');
+  assert.equal(next[1].name, '控糖蒸鱼');
 });
 
 test('deleteFood keeps at least one option in the pool', () => {
@@ -68,6 +77,7 @@ test('foodArt returns low-poly comic svg markup without emoji art', () => {
 
   assert.match(art, /<svg/);
   assert.match(art, /<image/);
+  assert.match(art, /class="foodFacet"/);
   assert.match(art, /assets\/food\/openmoji\//);
   assert.doesNotMatch(art, /🍜|🥘|🍚|🥟|🍲|🥗|🍛|🔥|🥢|🍖|🦀|🍗/);
 });
@@ -161,6 +171,6 @@ test('extractFoodsFromApiResponse accepts custom response paths and normalizes f
 
   assert.equal(foods.length, 2);
   assert.equal(foods[0].id, 1);
-  assert.equal(foods[1].name, 'AI 控糖蒸鱼');
+  assert.equal(foods[1].name, '控糖蒸鱼');
   assert.equal(foods[1].sugarSafe, true);
 });
