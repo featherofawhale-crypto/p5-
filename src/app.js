@@ -256,6 +256,13 @@ function unlockAudio() {
     });
 }
 
+function kickBgmNow() {
+  if (muted) return;
+  ++bgmFadeToken;
+  setBgmVolume(userBgmVolume());
+  bgm.play().catch(() => unlockAudio());
+}
+
 function audioCtx() {
   if (!ctx) {
     ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -497,9 +504,9 @@ function firePrizeConfetti(food) {
 
 async function startRoll() {
   if (spinning) return;
+  kickBgmNow();
   pinViewport();
   document.body.classList.add('cursorHidden');
-  unlockAudio();
   spinning = true;
   $('rollBtn').disabled = true;
   $('rollBtn').textContent = '抽选中...';
