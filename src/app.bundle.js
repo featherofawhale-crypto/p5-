@@ -39,6 +39,27 @@
   const RARITIES = new Set(['N', 'R', 'SR', 'SSR']);
   const RARITY_WEIGHTS = { N: 54, R: 30, SR: 12, SSR: 4 };
   const RARITY_ORDER = ['N', 'R', 'SR', 'SSR'];
+  const FOOD_ICON_OPTIONS = [
+    { value: 'auto', label: 'AUTO' },
+    { value: 'noodle', label: 'NOODLE' },
+    { value: 'rice', label: 'RICE' },
+    { value: 'dumpling', label: 'DUMPLING' },
+    { value: 'fish', label: 'FISH' },
+    { value: 'hotpot', label: 'HOTPOT' },
+    { value: 'skewer', label: 'SKEWER' },
+    { value: 'meat', label: 'MEAT' },
+    { value: 'tofu', label: 'TOFU' },
+    { value: 'salad', label: 'SALAD' },
+    { value: 'pizza', label: 'PIZZA' },
+    { value: 'burger', label: 'BURGER' },
+    { value: 'curry', label: 'CURRY' },
+    { value: 'sushi', label: 'SUSHI' },
+    { value: 'wrap', label: 'WRAP' },
+    { value: 'shrimp', label: 'SHRIMP' },
+    { value: 'bread', label: 'BREAD' },
+    { value: 'plate', label: 'PLATE' },
+  ];
+  const FOOD_ICON_KINDS = new Set(FOOD_ICON_OPTIONS.map((item) => item.value).filter((value) => value !== 'auto'));
   const HEALTH_PATTERN = /控糖|鸡胸|藜麦|糙米|沙拉|西兰花|蒸|低脂|杂粮|无糖|牛油果|豆腐|鱼|虾仁|蔬菜|时蔬/;
   const COLOR_SETS = [
     ['#f6d365', '#fda085', '#d7263d', '#151515'],
@@ -208,6 +229,7 @@
   function normalizeFood(input, fallbackId = 1) {
     const name = cleanFoodName(input?.name) || '未命名食物';
     const rarity = RARITIES.has(input?.rarity) ? input.rarity : 'SSR';
+    const requestedIcon = String(input?.iconKind || '').trim();
     return {
       id: clamp(input?.id ?? fallbackId, 1, 999999),
       name,
@@ -215,6 +237,7 @@
       calories: clamp(input?.calories ?? 520, 120, 1200),
       health: clamp(input?.health ?? 60, 1, 99),
       sugarSafe: input?.sugarSafe === true || input?.sugarSafe === 'true' || input?.sugarSafe === 'on',
+      iconKind: FOOD_ICON_KINDS.has(requestedIcon) ? requestedIcon : 'auto',
     };
   }
   function sanitizeFoodPool(items, fallback = buildFoods()) {
@@ -438,7 +461,7 @@
     const colors = COLOR_SETS[food.id % COLOR_SETS.length];
     const plate = food.sugarSafe ? '#ecfff8' : '#fff5f5';
     const rareStroke = food.rarity === 'SSR' ? '#ffd60a' : food.rarity === 'SR' ? '#7bdff2' : '#ffffff';
-    const kind = classifyFood(food.name);
+    const kind = FOOD_ICON_KINDS.has(food.iconKind) ? food.iconKind : classifyFood(food.name);
     return `
       <svg class="foodSvg" data-food-kind="${kind}" viewBox="0 0 160 160" width="${size}" height="${size}" role="img" aria-label="${food.name}">
         <defs><filter id="ink${food.id}" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="5" dy="5" stdDeviation="0" flood-color="#000" flood-opacity=".9"/></filter><clipPath id="dishClip${food.id}"><polygon points="33,42 126,38 132,118 72,130 29,109"/></clipPath></defs>
@@ -767,23 +790,23 @@
       tick += 1;
       drawReels([pickFood(), pickFood(), pickFood()]);
       if (tick % 2 === 0) sfx.tick(tick);
-    }, 92);
+    }, 116);
     setPhase('SCANNING MENU');
-    await delay(900);
+    await delay(1200);
     setPhase('TARGET ACQUIRED');
     cut('slash');
     sfx.slash();
-    await delay(900);
+    await delay(1100);
     setPhase('ANALYZING CALORIES');
     cut('manga');
     sfx.slash();
-    await delay(1200);
+    await delay(1650);
     setPhase('LOCKING DESTINY');
     cut('warning');
     $('machine').classList.add('finalCharge');
     sfx.suspense();
     sfx.warning();
-    await delay(1300);
+    await delay(1750);
     setPhase('FINAL JUDGEMENT');
     clearInterval(inter);
     drawReels([pickFood(), sealedFood(final), pickFood()]);
@@ -791,9 +814,9 @@
     cut('execute', final);
     document.querySelectorAll('.reel').forEach((node) => node.classList.add('locked'));
     sfx.lock();
-    await delay(380);
+    await delay(650);
     sfx.revealCharge();
-    await delay(520);
+    await delay(850);
     cut('');
     $('flash').classList.remove('go');
     $('flash').classList.add('burst');
@@ -804,7 +827,7 @@
     renderHistory();
     setPhase("TODAY'S DESTINY");
     sfx.jackpot();
-    await delay(620);
+    await delay(900);
     sfx.shine();
     $('flash').classList.remove('burst');
     $('machine').classList.remove('shake', 'finalCharge');
@@ -831,6 +854,9 @@
     $('oddsR').value = rarityWeights.R;
     $('oddsSR').value = rarityWeights.SR;
     $('oddsSSR').value = rarityWeights.SSR;
+  }
+  function initFoodIconForm() {
+    $('foodIconKind').innerHTML = FOOD_ICON_OPTIONS.map((item) => `<option value="${item.value}">${item.label}</option>`).join('');
   }
   function formatHistoryTime(value) {
     const date = new Date(value);
@@ -945,16 +971,23 @@
     });
     $('foodForm').addEventListener('submit', (event) => {
       event.preventDefault();
+      const addedName = $('foodName').value.trim();
+      const selectedIcon = $('foodIconKind').value;
       foods = createFood(foods, {
-        name: $('foodName').value,
+        name: addedName,
         rarity: $('foodRarity').value,
+        iconKind: selectedIcon,
         calories: $('foodCalories').value,
         health: $('foodHealth').value,
         sugarSafe: $('foodSugar').checked,
       });
       saveFoods();
       event.target.reset();
+      $('foodIconKind').value = 'auto';
+      $('foodFormStatus').textContent = `已加入：${addedName || foods.at(-1).name} · 图标 ${selectedIcon.toUpperCase()} · 当前菜单 ${foods.length} 个`;
       renderAdmin();
+      drawReels([pickFood(), pickFood(), pickFood()]);
+      drawResult(foods.at(-1), { animate: false });
     });
     $('foodList').addEventListener('click', (event) => {
       const id = event.target.dataset.delete;
@@ -1013,6 +1046,7 @@
     $('apiAppendBtn').addEventListener('click', () => generateFoodsFromApi('append'));
   }
   initBackground();
+  initFoodIconForm();
   wireEvents();
   initApiPanel();
   renderOddsForm();

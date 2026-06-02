@@ -41,6 +41,27 @@ export const FOOD_POOL_NAMES = [...DEFAULT_FOOD_NAMES, ...EXTRA_FOOD_NAMES];
 const RARITIES = new Set(['N', 'R', 'SR', 'SSR']);
 export const RARITY_WEIGHTS = { N: 54, R: 30, SR: 12, SSR: 4 };
 export const RARITY_ORDER = ['N', 'R', 'SR', 'SSR'];
+export const FOOD_ICON_OPTIONS = [
+  { value: 'auto', label: 'AUTO' },
+  { value: 'noodle', label: 'NOODLE' },
+  { value: 'rice', label: 'RICE' },
+  { value: 'dumpling', label: 'DUMPLING' },
+  { value: 'fish', label: 'FISH' },
+  { value: 'hotpot', label: 'HOTPOT' },
+  { value: 'skewer', label: 'SKEWER' },
+  { value: 'meat', label: 'MEAT' },
+  { value: 'tofu', label: 'TOFU' },
+  { value: 'salad', label: 'SALAD' },
+  { value: 'pizza', label: 'PIZZA' },
+  { value: 'burger', label: 'BURGER' },
+  { value: 'curry', label: 'CURRY' },
+  { value: 'sushi', label: 'SUSHI' },
+  { value: 'wrap', label: 'WRAP' },
+  { value: 'shrimp', label: 'SHRIMP' },
+  { value: 'bread', label: 'BREAD' },
+  { value: 'plate', label: 'PLATE' },
+];
+const FOOD_ICON_KINDS = new Set(FOOD_ICON_OPTIONS.map((item) => item.value).filter((value) => value !== 'auto'));
 const HEALTH_PATTERN = /控糖|鸡胸|藜麦|糙米|沙拉|西兰花|蒸|低脂|杂粮|无糖|牛油果|豆腐|鱼|虾仁|蔬菜|时蔬/;
 const COLOR_SETS = [
   ['#f6d365', '#fda085', '#d7263d', '#151515'],
@@ -317,6 +338,7 @@ export function foodNameSize(name) {
 export function normalizeFood(input, fallbackId = 1) {
   const name = cleanFoodName(input?.name) || '未命名食物';
   const rarity = RARITIES.has(input?.rarity) ? input.rarity : 'SSR';
+  const requestedIcon = String(input?.iconKind || '').trim();
   return {
     id: clamp(input?.id ?? fallbackId, 1, 999999),
     name,
@@ -324,6 +346,7 @@ export function normalizeFood(input, fallbackId = 1) {
     calories: clamp(input?.calories ?? 520, 120, 1200),
     health: clamp(input?.health ?? 60, 1, 99),
     sugarSafe: input?.sugarSafe === true || input?.sugarSafe === 'true' || input?.sugarSafe === 'on',
+    iconKind: FOOD_ICON_KINDS.has(requestedIcon) ? requestedIcon : 'auto',
   };
 }
 
@@ -452,7 +475,7 @@ export function foodArt(food, size = 160) {
   const colors = COLOR_SETS[food.id % COLOR_SETS.length];
   const plate = food.sugarSafe ? '#ecfff8' : '#fff5f5';
   const rareStroke = food.rarity === 'SSR' ? '#ffd60a' : food.rarity === 'SR' ? '#7bdff2' : '#ffffff';
-  const kind = classifyFood(food.name);
+  const kind = FOOD_ICON_KINDS.has(food.iconKind) ? food.iconKind : classifyFood(food.name);
   return `
     <svg class="foodSvg" data-food-kind="${kind}" viewBox="0 0 160 160" width="${size}" height="${size}" role="img" aria-label="${food.name}">
       <defs>

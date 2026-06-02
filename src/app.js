@@ -7,6 +7,7 @@ import {
   deleteFood,
   extractFoodsFromApiResponse,
   foodArt,
+  FOOD_ICON_OPTIONS,
   foodNameSize,
   getSoundCuePlan,
   normalizeRarityWeights,
@@ -398,24 +399,24 @@ async function startRoll() {
     tick += 1;
     drawReels([pickFood(), pickFood(), pickFood()]);
     if (tick % 2 === 0) sfx.tick(tick);
-  }, 92);
+  }, 116);
 
   setPhase('SCANNING MENU');
-  await delay(900);
+  await delay(1200);
   setPhase('TARGET ACQUIRED');
   cut('slash');
   sfx.slash();
-  await delay(900);
+  await delay(1100);
   setPhase('ANALYZING CALORIES');
   cut('manga');
   sfx.slash();
-  await delay(1200);
+  await delay(1650);
   setPhase('LOCKING DESTINY');
   cut('warning');
   $('machine').classList.add('finalCharge');
   sfx.suspense();
   sfx.warning();
-  await delay(1300);
+  await delay(1750);
   setPhase('FINAL JUDGEMENT');
   clearInterval(inter);
   drawReels([pickFood(), sealedFood(final), pickFood()]);
@@ -423,9 +424,9 @@ async function startRoll() {
   cut('execute', final);
   document.querySelectorAll('.reel').forEach((node) => node.classList.add('locked'));
   sfx.lock();
-  await delay(380);
+  await delay(650);
   sfx.revealCharge();
-  await delay(520);
+  await delay(850);
   cut('');
   $('flash').classList.remove('go');
   $('flash').classList.add('burst');
@@ -436,7 +437,7 @@ async function startRoll() {
   renderHistory();
   setPhase("TODAY'S DESTINY");
   sfx.jackpot();
-  await delay(620);
+  await delay(900);
   sfx.shine();
   $('flash').classList.remove('burst');
   $('machine').classList.remove('shake', 'finalCharge');
@@ -458,6 +459,10 @@ function renderAdmin() {
     <div><strong>${food.name}</strong><span>${food.rarity} · ${food.calories} kcal · HEALTH ${food.health} · 控糖 ${food.sugarSafe ? 'OK' : 'NO'}</span></div>
     <button data-delete="${food.id}">删除</button>
   </div>`).join('');
+}
+
+function initFoodIconForm() {
+  $('foodIconKind').innerHTML = FOOD_ICON_OPTIONS.map((item) => `<option value="${item.value}">${item.label}</option>`).join('');
 }
 
 function renderOddsForm() {
@@ -587,16 +592,23 @@ function wireEvents() {
   });
   $('foodForm').addEventListener('submit', (event) => {
     event.preventDefault();
+    const addedName = $('foodName').value.trim();
+    const selectedIcon = $('foodIconKind').value;
     foods = createFood(foods, {
-      name: $('foodName').value,
+      name: addedName,
       rarity: $('foodRarity').value,
+      iconKind: selectedIcon,
       calories: $('foodCalories').value,
       health: $('foodHealth').value,
       sugarSafe: $('foodSugar').checked,
     });
     saveFoods();
     event.target.reset();
+    $('foodIconKind').value = 'auto';
+    $('foodFormStatus').textContent = `已加入：${addedName || foods.at(-1).name} · 图标 ${selectedIcon.toUpperCase()} · 当前菜单 ${foods.length} 个`;
     renderAdmin();
+    drawReels([pickFood(), pickFood(), pickFood()]);
+    drawResult(foods.at(-1), { animate: false });
   });
   $('foodList').addEventListener('click', (event) => {
     const id = event.target.dataset.delete;
@@ -656,6 +668,7 @@ function wireEvents() {
 }
 
 initBackground();
+initFoodIconForm();
 wireEvents();
 initApiPanel();
 renderOddsForm();

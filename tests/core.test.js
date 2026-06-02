@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   DEFAULT_FOOD_NAMES,
   FOOD_POOL_NAMES,
+  FOOD_ICON_OPTIONS,
   API_STYLE_PRESETS,
   buildApiGenerationRequest,
   buildFoods,
@@ -49,6 +50,7 @@ test('normalizeFood clamps admin values and keeps sugar flag boolean', () => {
     calories: 1200,
     health: 1,
     sugarSafe: true,
+    iconKind: 'auto',
   });
 });
 
@@ -192,6 +194,16 @@ test('foodArt uses attributed local image assets for food art', () => {
   assert.match(art, />TOFU</);
   assert.match(art, /<image/);
   assert.match(art, /assets\/food\/openmoji\/1F9C8\.svg/);
+});
+
+test('manual icon kind overrides automatic food classification', () => {
+  const food = normalizeFood({ id: 1, name: '牛肉面', rarity: 'R', iconKind: 'sushi' });
+  const art = foodArt(food);
+
+  assert.equal(FOOD_ICON_OPTIONS.some((item) => item.value === 'sushi'), true);
+  assert.equal(food.iconKind, 'sushi');
+  assert.match(art, /data-food-kind="sushi"/);
+  assert.match(art, /assets\/food\/openmoji\/1F363\.svg/);
 });
 
 test('getSoundCuePlan layers editorial sound roles across frequency bands', () => {

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
   <meta name="theme-color" content="#e60012" />
   <title>命运食物处决老虎机</title>
-  <link rel="stylesheet" href="src/styles.css?v=0.4.34" />
+  <link rel="stylesheet" href="src/styles.css?v=0.4.35" />
 </head>
 <body>
   <div id="app">
@@ -78,11 +78,13 @@
           <option>SR</option>
           <option>SSR</option>
         </select>
+        <select id="foodIconKind" aria-label="食物图标"></select>
         <input id="foodCalories" type="number" min="120" max="1200" placeholder="热量" value="520" />
         <input id="foodHealth" type="number" min="1" max="99" placeholder="健康值" value="60" />
         <label class="check"><input id="foodSugar" type="checkbox" /> 控糖 OK</label>
         <button type="submit">加入菜单</button>
       </form>
+      <div class="formStatus" id="foodFormStatus" role="status">填写食物后会加入菜单池</div>
       <div class="adminTools">
         <button id="exportBtn">导出</button>
         <button id="importBtn">导入</button>
@@ -143,6 +145,6 @@
   </div>
 
   <audio id="bgm" preload="auto" src="assets/last_surprise.m4a"></audio>
-  <script src="src/app.bundle.js?v=0.4.34"></script>
+  <script src="src/app.bundle.js?v=0.4.35"></script>
 </body>
 </html>
