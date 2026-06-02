@@ -49,6 +49,7 @@
   ];
   const STORAGE_KEY = 'dinner-slot-foods-v2';
   const API_CONFIG_KEY = 'dinner-slot-api-config-v1';
+  const ODDS_CONFIG_KEY = 'dinner-slot-odds-v1';
   const API_STYLE_PRESETS = [
     { id: 'low-poly-comic', name: '低多边形美漫', prompt: 'low-poly American comic food illustration, bold black ink, angular facets, dramatic red white black palette, readable food silhouette' },
     { id: 'persona-punk', name: '怪盗红黑冲击', prompt: 'stylish phantom-thief game UI food concept, red black white, sharp diagonal composition, high contrast, dramatic reveal card' },
@@ -153,6 +154,11 @@
     const number = Number(value);
     if (!Number.isFinite(number)) return min;
     return Math.min(max, Math.max(min, Math.round(number)));
+  }
+  function normalizeRarityWeights(input = RARITY_WEIGHTS) {
+    const weights = Object.fromEntries(RARITY_ORDER.map((rarity) => [rarity, clamp(input?.[rarity] ?? RARITY_WEIGHTS[rarity], 0, 999)]));
+    const total = Object.values(weights).reduce((sum, value) => sum + value, 0);
+    return total > 0 ? weights : { ...RARITY_WEIGHTS };
   }
   function pickRarity(name, index = 0) {
     if (index >= FOOD_POOL_NAMES.length - 10 || /^SSR/.test(name)) return 'SSR';
@@ -301,11 +307,12 @@
     if (foods.length <= 1) return foods;
     return foods.filter((food) => food.id !== Number(id));
   }
-  function randomFood(foods, random = Math.random) {
+  function randomFood(foods, random = Math.random, weights = RARITY_WEIGHTS) {
     const pool = Array.isArray(foods) ? foods : [];
     if (!pool.length) return undefined;
+    const rarityWeights = normalizeRarityWeights(weights);
     const groups = RARITY_ORDER
-      .map((rarity) => ({ rarity, items: pool.filter((food) => food.rarity === rarity), weight: RARITY_WEIGHTS[rarity] }))
+      .map((rarity) => ({ rarity, items: pool.filter((food) => food.rarity === rarity), weight: rarityWeights[rarity] }))
       .filter((group) => group.items.length && group.weight > 0);
     const total = groups.reduce((sum, group) => sum + group.weight, 0);
     let cursor = random() * total;
@@ -315,10 +322,11 @@
     }) ?? groups.at(-1);
     return group.items[Math.floor(random() * group.items.length)] ?? pool[0];
   }
-  function rarityOdds(foods) {
+  function rarityOdds(foods, weights = RARITY_WEIGHTS) {
     const pool = Array.isArray(foods) ? foods : [];
+    const rarityWeights = normalizeRarityWeights(weights);
     const available = RARITY_ORDER
-      .map((rarity) => ({ rarity, count: pool.filter((food) => food.rarity === rarity).length, weight: RARITY_WEIGHTS[rarity] }))
+      .map((rarity) => ({ rarity, count: pool.filter((food) => food.rarity === rarity).length, weight: rarityWeights[rarity] }))
       .filter((item) => item.count > 0 && item.weight > 0);
     const total = available.reduce((sum, item) => sum + item.weight, 0) || 1;
     return available.map((item) => ({ ...item, percent: Number(((item.weight / total) * 100).toFixed(1)) }));
@@ -415,6 +423,7 @@
   }
 
   let foods = loadFoods();
+  let rarityWeights = loadRarityWeights();
   let spinning = false;
   let bgmIndex = 0;
   let muted = false;
@@ -433,6 +442,9 @@
     $('bgmName').textContent = BGM[bgmIndex].name;
     if (play && !muted) bgm.play().catch(() => {});
   }
+  function pickFood() {
+    return randomFood(foods, Math.random, rarityWeights);
+  }
 
   function loadFoods() {
     try {
@@ -450,6 +462,16 @@
   }
   function saveFoods() {
     localStorage.setItem(STORAGE_KEY, serializeFoods(foods));
+  }
+  function loadRarityWeights() {
+    try {
+      return normalizeRarityWeights(JSON.parse(localStorage.getItem(ODDS_CONFIG_KEY) || '{}'));
+    } catch {
+      return normalizeRarityWeights(RARITY_WEIGHTS);
+    }
+  }
+  function saveRarityWeights() {
+    localStorage.setItem(ODDS_CONFIG_KEY, JSON.stringify(rarityWeights));
   }
   function loadApiConfig() {
     try {
@@ -584,7 +606,7 @@
   }
   function drawResult(food) {
     const label = food.rarity === 'SSR' ? 'EXECUTION SSR' : food.rarity === 'SR' ? 'SUPER RARE' : food.rarity === 'R' ? 'RARE' : 'NORMAL';
-    const sideCards = [randomFood(foods), randomFood(foods)];
+    const sideCards = [pickFood(), pickFood()];
     $('result').classList.remove('reveal');
     $('result').innerHTML = `<div class="resultBody">
       <div class="resultFx"><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -625,11 +647,11 @@
     $('flash').classList.add('go');
     sfx.click();
     sfx.whoosh();
-    const final = randomFood(foods);
+    const final = pickFood();
     let tick = 0;
     const inter = setInterval(() => {
       tick += 1;
-      drawReels([randomFood(foods), randomFood(foods), randomFood(foods)]);
+      drawReels([pickFood(), pickFood(), pickFood()]);
       if (tick % 2 === 0) sfx.tick(tick);
     }, 92);
     setPhase('SCANNING MENU');
@@ -650,7 +672,7 @@
     await delay(1300);
     setPhase('FINAL JUDGEMENT');
     cut('execute', final);
-    drawReels([randomFood(foods), final, randomFood(foods)]);
+    drawReels([pickFood(), final, pickFood()]);
     document.querySelectorAll('.reel').forEach((node) => node.classList.add('locked'));
     sfx.lock();
     await delay(380);
@@ -674,12 +696,20 @@
   }
   function renderAdmin() {
     $('pool').textContent = `POOL ${foods.length}`;
-    $('pool').title = rarityOdds(foods).map((item) => `${item.rarity} ${item.percent}% / ${item.count}个`).join(' · ');
-    $('odds').textContent = rarityOdds(foods).map((item) => `${item.rarity} ${item.percent}%`).join(' · ');
+    const odds = rarityOdds(foods, rarityWeights);
+    $('pool').title = odds.map((item) => `${item.rarity} ${item.percent}% / ${item.count}个`).join(' · ');
+    $('odds').textContent = odds.map((item) => `${item.rarity} ${item.percent}%`).join(' · ');
+    $('oddsStatus').textContent = odds.map((item) => `${item.rarity}: ${item.percent}% (${item.count}个)`).join(' · ');
     $('foodList').innerHTML = foods.map((food) => `<div class="foodRow">
       <div><strong>${food.name}</strong><span>${food.rarity} · ${food.calories} kcal · HEALTH ${food.health} · 控糖 ${food.sugarSafe ? 'OK' : 'NO'}</span></div>
       <button data-delete="${food.id}">删除</button>
     </div>`).join('');
+  }
+  function renderOddsForm() {
+    $('oddsN').value = rarityWeights.N;
+    $('oddsR').value = rarityWeights.R;
+    $('oddsSR').value = rarityWeights.SR;
+    $('oddsSSR').value = rarityWeights.SSR;
   }
   function initApiPanel() {
     $('apiStylePreset').innerHTML = API_STYLE_PRESETS.map((preset) => `<option value="${preset.id}">${preset.name}</option>`).join('');
@@ -724,7 +754,7 @@
       foods = mode === 'append' ? [...foods, ...generated.map((food, index) => ({ ...food, id: foods.length + index + 1 }))] : generated;
       saveFoods();
       renderAdmin();
-      drawReels([randomFood(foods), randomFood(foods), randomFood(foods)]);
+      drawReels([pickFood(), pickFood(), pickFood()]);
       drawResult(foods[0]);
       $('apiStatus').textContent = `已生成 ${generated.length} 个食物，使用预设：${request.preset.name}`;
     } catch (error) {
@@ -787,7 +817,7 @@
       foods = deleteFood(foods, Number(id));
       saveFoods();
       renderAdmin();
-      drawReels([randomFood(foods), randomFood(foods), randomFood(foods)]);
+      drawReels([pickFood(), pickFood(), pickFood()]);
     });
     $('exportBtn').addEventListener('click', () => {
       $('jsonBox').value = serializeFoods(foods);
@@ -797,7 +827,7 @@
         foods = parseFoods($('jsonBox').value);
         saveFoods();
         renderAdmin();
-        drawReels([randomFood(foods), randomFood(foods), randomFood(foods)]);
+        drawReels([pickFood(), pickFood(), pickFood()]);
       } catch (error) {
         $('jsonBox').value = `导入失败：${error.message}`;
       }
@@ -806,8 +836,25 @@
       foods = buildFoods();
       saveFoods();
       renderAdmin();
-      drawReels([randomFood(foods), randomFood(foods), randomFood(foods)]);
+      drawReels([pickFood(), pickFood(), pickFood()]);
       drawResult(foods[0]);
+    });
+    $('saveOddsBtn').addEventListener('click', () => {
+      rarityWeights = normalizeRarityWeights({
+        N: $('oddsN').value,
+        R: $('oddsR').value,
+        SR: $('oddsSR').value,
+        SSR: $('oddsSSR').value,
+      });
+      saveRarityWeights();
+      renderOddsForm();
+      renderAdmin();
+    });
+    $('resetOddsBtn').addEventListener('click', () => {
+      rarityWeights = normalizeRarityWeights(RARITY_WEIGHTS);
+      saveRarityWeights();
+      renderOddsForm();
+      renderAdmin();
     });
     $('apiReplaceBtn').addEventListener('click', () => generateFoodsFromApi('replace'));
     $('apiAppendBtn').addEventListener('click', () => generateFoodsFromApi('append'));
@@ -815,6 +862,7 @@
   initBackground();
   wireEvents();
   initApiPanel();
+  renderOddsForm();
   renderAdmin();
   drawReels([foods[20], foods[43], foods[8]]);
   drawResult(foods[0]);

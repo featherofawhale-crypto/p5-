@@ -1,5 +1,6 @@
 import {
   API_STYLE_PRESETS,
+  RARITY_WEIGHTS,
   buildApiGenerationRequest,
   buildFoods,
   createFood,
@@ -7,6 +8,7 @@ import {
   extractFoodsFromApiResponse,
   foodArt,
   getSoundCuePlan,
+  normalizeRarityWeights,
   parseFoods,
   randomFood,
   rarityOdds,
@@ -16,6 +18,7 @@ import {
 
 const STORAGE_KEY = 'dinner-slot-foods-v2';
 const API_CONFIG_KEY = 'dinner-slot-api-config-v1';
+const ODDS_CONFIG_KEY = 'dinner-slot-odds-v1';
 const DEFAULT_API_BODY = `{
   "model": "gpt-4o-mini",
   "messages": [
@@ -39,6 +42,7 @@ const $ = (id) => document.getElementById(id);
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 let foods = loadFoods();
+let rarityWeights = loadRarityWeights();
 let spinning = false;
 let bgmIndex = 0;
 let muted = false;
@@ -59,6 +63,10 @@ function switchBgm({ play = true, cue = true } = {}) {
   if (play && !muted) bgm.play().catch(() => {});
 }
 
+function pickFood() {
+  return randomFood(foods, Math.random, rarityWeights);
+}
+
 function loadFoods() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -76,6 +84,18 @@ function loadFoods() {
 
 function saveFoods() {
   localStorage.setItem(STORAGE_KEY, serializeFoods(foods));
+}
+
+function loadRarityWeights() {
+  try {
+    return normalizeRarityWeights(JSON.parse(localStorage.getItem(ODDS_CONFIG_KEY) || '{}'));
+  } catch {
+    return normalizeRarityWeights(RARITY_WEIGHTS);
+  }
+}
+
+function saveRarityWeights() {
+  localStorage.setItem(ODDS_CONFIG_KEY, JSON.stringify(rarityWeights));
 }
 
 function loadApiConfig() {
@@ -223,7 +243,7 @@ function drawReels(items) {
 
 function drawResult(food) {
   const label = food.rarity === 'SSR' ? 'EXECUTION SSR' : food.rarity === 'SR' ? 'SUPER RARE' : food.rarity === 'R' ? 'RARE' : 'NORMAL';
-  const sideCards = [randomFood(foods), randomFood(foods)];
+  const sideCards = [pickFood(), pickFood()];
   $('result').classList.remove('reveal');
   $('result').innerHTML = `<div class="resultBody">
     <div class="resultFx"><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -268,11 +288,11 @@ async function startRoll() {
   sfx.click();
   sfx.whoosh();
 
-  const final = randomFood(foods);
+  const final = pickFood();
   let tick = 0;
   const inter = setInterval(() => {
     tick += 1;
-    drawReels([randomFood(foods), randomFood(foods), randomFood(foods)]);
+    drawReels([pickFood(), pickFood(), pickFood()]);
     if (tick % 2 === 0) sfx.tick(tick);
   }, 92);
 
@@ -294,7 +314,7 @@ async function startRoll() {
   await delay(1300);
   setPhase('FINAL JUDGEMENT');
   cut('execute', final);
-  drawReels([randomFood(foods), final, randomFood(foods)]);
+  drawReels([pickFood(), final, pickFood()]);
   document.querySelectorAll('.reel').forEach((node) => node.classList.add('locked'));
   sfx.lock();
   await delay(380);
@@ -319,12 +339,21 @@ async function startRoll() {
 
 function renderAdmin() {
   $('pool').textContent = `POOL ${foods.length}`;
-  $('pool').title = rarityOdds(foods).map((item) => `${item.rarity} ${item.percent}% / ${item.count}个`).join(' · ');
-  $('odds').textContent = rarityOdds(foods).map((item) => `${item.rarity} ${item.percent}%`).join(' · ');
+  const odds = rarityOdds(foods, rarityWeights);
+  $('pool').title = odds.map((item) => `${item.rarity} ${item.percent}% / ${item.count}个`).join(' · ');
+  $('odds').textContent = odds.map((item) => `${item.rarity} ${item.percent}%`).join(' · ');
+  $('oddsStatus').textContent = odds.map((item) => `${item.rarity}: ${item.percent}% (${item.count}个)`).join(' · ');
   $('foodList').innerHTML = foods.map((food) => `<div class="foodRow">
     <div><strong>${food.name}</strong><span>${food.rarity} · ${food.calories} kcal · HEALTH ${food.health} · 控糖 ${food.sugarSafe ? 'OK' : 'NO'}</span></div>
     <button data-delete="${food.id}">删除</button>
   </div>`).join('');
+}
+
+function renderOddsForm() {
+  $('oddsN').value = rarityWeights.N;
+  $('oddsR').value = rarityWeights.R;
+  $('oddsSR').value = rarityWeights.SR;
+  $('oddsSSR').value = rarityWeights.SSR;
 }
 
 function initApiPanel() {
@@ -372,7 +401,7 @@ async function generateFoodsFromApi(mode) {
     foods = mode === 'append' ? [...foods, ...generated.map((food, index) => ({ ...food, id: foods.length + index + 1 }))] : generated;
     saveFoods();
     renderAdmin();
-    drawReels([randomFood(foods), randomFood(foods), randomFood(foods)]);
+    drawReels([pickFood(), pickFood(), pickFood()]);
     drawResult(foods[0]);
     $('apiStatus').textContent = `已生成 ${generated.length} 个食物，使用预设：${request.preset.name}`;
   } catch (error) {
@@ -437,7 +466,7 @@ function wireEvents() {
     foods = deleteFood(foods, Number(id));
     saveFoods();
     renderAdmin();
-    drawReels([randomFood(foods), randomFood(foods), randomFood(foods)]);
+    drawReels([pickFood(), pickFood(), pickFood()]);
   });
   $('exportBtn').addEventListener('click', () => {
     $('jsonBox').value = serializeFoods(foods);
@@ -447,7 +476,7 @@ function wireEvents() {
       foods = parseFoods($('jsonBox').value);
       saveFoods();
       renderAdmin();
-      drawReels([randomFood(foods), randomFood(foods), randomFood(foods)]);
+      drawReels([pickFood(), pickFood(), pickFood()]);
     } catch (error) {
       $('jsonBox').value = `导入失败：${error.message}`;
     }
@@ -456,8 +485,25 @@ function wireEvents() {
     foods = buildFoods();
     saveFoods();
     renderAdmin();
-    drawReels([randomFood(foods), randomFood(foods), randomFood(foods)]);
+    drawReels([pickFood(), pickFood(), pickFood()]);
     drawResult(foods[0]);
+  });
+  $('saveOddsBtn').addEventListener('click', () => {
+    rarityWeights = normalizeRarityWeights({
+      N: $('oddsN').value,
+      R: $('oddsR').value,
+      SR: $('oddsSR').value,
+      SSR: $('oddsSSR').value,
+    });
+    saveRarityWeights();
+    renderOddsForm();
+    renderAdmin();
+  });
+  $('resetOddsBtn').addEventListener('click', () => {
+    rarityWeights = normalizeRarityWeights(RARITY_WEIGHTS);
+    saveRarityWeights();
+    renderOddsForm();
+    renderAdmin();
   });
   $('apiReplaceBtn').addEventListener('click', () => generateFoodsFromApi('replace'));
   $('apiAppendBtn').addEventListener('click', () => generateFoodsFromApi('append'));
@@ -466,6 +512,7 @@ function wireEvents() {
 initBackground();
 wireEvents();
 initApiPanel();
+renderOddsForm();
 renderAdmin();
 drawReels([foods[20], foods[43], foods[8]]);
 drawResult(foods[0]);

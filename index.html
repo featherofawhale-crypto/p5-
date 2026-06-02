@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
   <meta name="theme-color" content="#e60012" />
   <title>命运食物处决老虎机</title>
-  <link rel="stylesheet" href="src/styles.css?v=0.4.13" />
+  <link rel="stylesheet" href="src/styles.css?v=0.4.14" />
 </head>
 <body>
   <div id="app">
@@ -89,6 +89,23 @@
         <button id="resetBtn">重置</button>
       </div>
       <textarea id="jsonBox" spellcheck="false" placeholder="导出/导入菜单 JSON"></textarea>
+      <section class="oddsBox">
+        <div class="apiTitle">
+          <span class="label">RARITY ODDS</span>
+          <small>数字越大越容易抽中；0 表示关闭该稀有度</small>
+        </div>
+        <div class="oddsGrid">
+          <label>N<input id="oddsN" type="number" min="0" max="999" value="54" /></label>
+          <label>R<input id="oddsR" type="number" min="0" max="999" value="30" /></label>
+          <label>SR<input id="oddsSR" type="number" min="0" max="999" value="12" /></label>
+          <label>SSR<input id="oddsSSR" type="number" min="0" max="999" value="4" /></label>
+        </div>
+        <div class="oddsActions">
+          <button id="saveOddsBtn" type="button">保存概率</button>
+          <button id="resetOddsBtn" type="button">默认概率</button>
+        </div>
+        <div class="apiStatus" id="oddsStatus">当前概率会显示在主界面奖池条。</div>
+      </section>
       <section class="apiBox">
         <div class="apiTitle">
           <span class="label">API GENERATOR</span>
@@ -115,6 +132,6 @@
   </div>
 
   <audio id="bgm" preload="auto" src="assets/last_surprise.m4a"></audio>
-  <script src="src/app.bundle.js?v=0.4.13"></script>
+  <script src="src/app.bundle.js?v=0.4.14"></script>
 </body>
 </html>

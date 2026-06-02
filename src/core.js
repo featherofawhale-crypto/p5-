@@ -269,6 +269,12 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, Math.round(number)));
 }
 
+export function normalizeRarityWeights(input = RARITY_WEIGHTS) {
+  const weights = Object.fromEntries(RARITY_ORDER.map((rarity) => [rarity, clamp(input?.[rarity] ?? RARITY_WEIGHTS[rarity], 0, 999)]));
+  const total = Object.values(weights).reduce((sum, value) => sum + value, 0);
+  return total > 0 ? weights : { ...RARITY_WEIGHTS };
+}
+
 export function pickRarity(name, index = 0) {
   if (index >= FOOD_POOL_NAMES.length - 10 || /^SSR/.test(name)) return 'SSR';
   const score = (name.length * 17 + index * 31) % 100;
@@ -341,11 +347,12 @@ export function deleteFood(foods, id) {
   return foods.filter((food) => food.id !== Number(id));
 }
 
-export function randomFood(foods, random = Math.random) {
+export function randomFood(foods, random = Math.random, weights = RARITY_WEIGHTS) {
   const pool = Array.isArray(foods) ? foods : [];
   if (!pool.length) return undefined;
+  const rarityWeights = normalizeRarityWeights(weights);
   const groups = RARITY_ORDER
-    .map((rarity) => ({ rarity, items: pool.filter((food) => food.rarity === rarity), weight: RARITY_WEIGHTS[rarity] }))
+    .map((rarity) => ({ rarity, items: pool.filter((food) => food.rarity === rarity), weight: rarityWeights[rarity] }))
     .filter((group) => group.items.length && group.weight > 0);
   const total = groups.reduce((sum, group) => sum + group.weight, 0);
   let cursor = random() * total;
@@ -356,10 +363,11 @@ export function randomFood(foods, random = Math.random) {
   return group.items[Math.floor(random() * group.items.length)] ?? pool[0];
 }
 
-export function rarityOdds(foods) {
+export function rarityOdds(foods, weights = RARITY_WEIGHTS) {
   const pool = Array.isArray(foods) ? foods : [];
+  const rarityWeights = normalizeRarityWeights(weights);
   const available = RARITY_ORDER
-    .map((rarity) => ({ rarity, count: pool.filter((food) => food.rarity === rarity).length, weight: RARITY_WEIGHTS[rarity] }))
+    .map((rarity) => ({ rarity, count: pool.filter((food) => food.rarity === rarity).length, weight: rarityWeights[rarity] }))
     .filter((item) => item.count > 0 && item.weight > 0);
   const total = available.reduce((sum, item) => sum + item.weight, 0) || 1;
   return available.map((item) => ({

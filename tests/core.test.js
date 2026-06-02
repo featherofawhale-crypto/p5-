@@ -15,6 +15,7 @@ import {
   foodIconPath,
   getSoundCuePlan,
   normalizeFood,
+  normalizeRarityWeights,
   randomFood,
   rarityOdds,
   sanitizeFoodPool,
@@ -113,6 +114,18 @@ test('randomFood draws by rarity weight before picking within that rarity', () =
   const draws = [0.01, 0.55, 0.85, 0.98].map((pick) => randomFood(foods, () => pick).rarity);
 
   assert.deepEqual(draws, ['N', 'R', 'SR', 'SSR']);
+});
+
+test('custom rarity weights can force a selected rarity', () => {
+  const foods = [
+    { id: 1, name: '普通饭', rarity: 'N' },
+    { id: 2, name: '稀有面', rarity: 'R' },
+    { id: 3, name: '超稀有锅', rarity: 'SR' },
+    { id: 4, name: '终极牛排', rarity: 'SSR' },
+  ];
+
+  assert.equal(randomFood(foods, () => 0.1, { N: 0, R: 0, SR: 0, SSR: 1 }).rarity, 'SSR');
+  assert.deepEqual(normalizeRarityWeights({ N: 0, R: 0, SR: 0, SSR: 0 }), { N: 54, R: 30, SR: 12, SSR: 4 });
 });
 
 test('foodArt returns low-poly comic svg markup without emoji art', () => {
