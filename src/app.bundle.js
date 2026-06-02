@@ -474,17 +474,45 @@
   let ctx;
   let masterGain;
   let compressor;
+  let bgmFadeToken = 0;
+  let bgmDuckTimer;
   const sampleCache = new Map();
   const bgm = $('bgm');
   bgm.volume = 0.18;
 
+  function userBgmVolume() {
+    return Math.max(0, Math.min(1, Number($('volumeSlider').value || 18) / 100));
+  }
+  function setBgmVolume(value) {
+    bgm.volume = Math.max(0, Math.min(1, value));
+  }
+  function fadeBgm(to, ms = 360, done = () => {}) {
+    const token = ++bgmFadeToken;
+    const start = bgm.volume;
+    const target = Math.max(0, Math.min(1, to));
+    const started = performance.now();
+    const tick = (now) => {
+      if (token !== bgmFadeToken) return;
+      const progress = Math.min(1, (now - started) / ms);
+      const eased = 1 - (1 - progress) ** 2;
+      setBgmVolume(start + (target - start) * eased);
+      if (progress < 1) requestAnimationFrame(tick);
+      else done();
+    };
+    requestAnimationFrame(tick);
+  }
   function switchBgm({ play = true, cue = true } = {}) {
     if (BGM.length <= 1) return;
     if (cue) sfx.click();
-    bgmIndex = (bgmIndex + 1) % BGM.length;
-    bgm.src = BGM[bgmIndex].src;
-    $('bgmName').textContent = BGM[bgmIndex].name;
-    if (play && !muted) bgm.play().catch(() => {});
+    const shouldPlay = play && !muted;
+    fadeBgm(0.02, 260, () => {
+      bgmIndex = (bgmIndex + 1) % BGM.length;
+      bgm.src = BGM[bgmIndex].src;
+      $('bgmName').textContent = BGM[bgmIndex].name;
+      bgm.load();
+      if (shouldPlay) bgm.play().catch(() => {});
+      fadeBgm(shouldPlay ? userBgmVolume() : 0, 420);
+    });
   }
   function pickFood() {
     return randomFood(foods, Math.random, rarityWeights);
@@ -622,10 +650,11 @@
   }
   function duckMusic(amount = 0.45, ms = 680) {
     if (muted) return;
-    const base = Number($('volumeSlider').value || 18) / 100;
-    bgm.volume = Math.max(0.05, base * amount);
-    setTimeout(() => {
-      if (!muted) bgm.volume = base;
+    clearTimeout(bgmDuckTimer);
+    const base = userBgmVolume();
+    fadeBgm(Math.max(0.04, base * amount), 120);
+    bgmDuckTimer = setTimeout(() => {
+      if (!muted) fadeBgm(userBgmVolume(), 320);
     }, ms);
   }
   function playSoundLayer(layer, offset = 0, pitchOffset = 0) {
@@ -893,7 +922,8 @@
     $('bgmBtn').addEventListener('click', () => switchBgm());
     bgm.addEventListener('ended', () => switchBgm({ cue: false }));
     $('volumeSlider').addEventListener('input', (event) => {
-      bgm.volume = Number(event.target.value) / 100;
+      ++bgmFadeToken;
+      setBgmVolume(Number(event.target.value) / 100);
     });
     document.addEventListener('click', (event) => {
       if (event.target.closest('#adminBtn')) $('adminPanel').classList.add('open');
