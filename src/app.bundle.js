@@ -820,7 +820,7 @@
     const nameSize = foodNameSize(food.name);
     const animate = options.animate !== false;
     const concealed = Boolean(options.concealed);
-    const displayLabel = concealed ? 'CLASSIFIED' : label;
+    const displayLabel = concealed ? '封存中' : label;
     const displayName = concealed ? '???' : food.name;
     const displayIcon = concealed ? '<div class="sealedMark">?</div>' : foodArt(food, 132);
     $('result').classList.remove('reveal');
@@ -830,7 +830,7 @@
     <div class="resultFx"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="resultHead"><div class="rarityBig">${displayLabel}</div><div class="raritySignal">${concealed ? '??' : food.rarity}</div></div>
     <div class="resultStage">
-      <div class="drawCard winnerCard" data-rarity="${food.rarity}" data-name-size="${concealed ? 'short' : nameSize}"><div class="cardTop">${displayLabel}</div><div class="winnerIcon" data-food-icon="${concealed ? 'sealed' : food.name}">${displayIcon}</div><div class="resultCopy"><div class="destiny">${concealed ? 'SEALED DESTINY' : "TODAY'S DESTINY"}</div><div class="resultName">${displayName}</div></div></div>
+      <div class="drawCard winnerCard" data-rarity="${food.rarity}" data-name-size="${concealed ? 'short' : nameSize}"><div class="cardTop">${displayLabel}</div><div class="winnerIcon" data-food-icon="${concealed ? 'sealed' : food.name}">${displayIcon}</div><div class="resultCopy"><div class="destiny">${concealed ? '答案锁定中' : '今日命运食物'}</div><div class="resultName">${displayName}</div></div></div>
     </div>
       <div class="stats"><div class="stat"><small>KCAL</small><b>${food.calories}</b></div><div class="stat"><small>HEALTH</small><b>${food.health}</b></div><div class="stat"><small>控糖</small><b>${food.sugarSafe ? 'OK' : 'NO'}</b></div></div>
     </div>`;
@@ -856,7 +856,7 @@
       }).join('') + '</div>';
     }
     if (type === 'warning') cutin.innerHTML = '<div class="black"></div><div class="redFlash"></div><div class="warningBox"><div class="warningText">WARNING</div><div class="warningSub">RARE DESTINY DETECTED</div></div>';
-    if (type === 'execute') cutin.innerHTML = '<div class="execute"><span>EXECUTE</span><b>SEALED DESTINY</b></div>';
+    if (type === 'execute') cutin.innerHTML = '<div class="execute"><span>揭晓中</span><b>答案即将公开</b></div>';
   }
   function firePrizeConfetti(food) {
     const confetti = window.confetti;
@@ -882,7 +882,7 @@
     unlockAudio();
     spinning = true;
     $('rollBtn').disabled = true;
-    $('rollBtn').textContent = 'EXECUTING...';
+    $('rollBtn').textContent = '抽选中...';
     $('machine').classList.add('shake');
     document.querySelectorAll('.reel').forEach((node) => node.classList.add('spin'));
     $('flash').classList.add('go');
@@ -911,7 +911,7 @@
     sfx.suspense();
     sfx.warning();
     await delay(1750);
-    setPhase('FINAL JUDGEMENT');
+    setPhase('最终判定');
     clearInterval(inter);
     drawReels([pickFood(), sealedFood(final), pickFood()]);
     drawResult(final, { animate: false, concealed: true });
@@ -930,7 +930,7 @@
     pinViewport();
     recordDraw(final);
     renderHistory();
-    setPhase("TODAY'S DESTINY");
+    setPhase('今日命运');
     sfx.jackpot();
     await delay(900);
     sfx.shine();
