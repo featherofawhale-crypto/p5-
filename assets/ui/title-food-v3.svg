@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="260" viewBox="0 0 900 260" role="img" aria-label="命运食物 处决老虎机">
+  <defs>
+    <filter id="hardShadow" x="-20%" y="-20%" width="150%" height="150%">
+      <feDropShadow dx="10" dy="10" stdDeviation="0" flood-color="#000" flood-opacity="1"/>
+      <feDropShadow dx="16" dy="16" stdDeviation="0" flood-color="#e60012" flood-opacity="1"/>
+    </filter>
+    <filter id="hotGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 1  0 0.75 0 0 0.2  0 0 0.1 0 0  0 0 0 1 0"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="redSlash" x1="0" x2="1">
+      <stop offset="0" stop-color="#ff001e"/>
+      <stop offset="0.55" stop-color="#e60012"/>
+      <stop offset="1" stop-color="#710009"/>
+    </linearGradient>
+    <pattern id="speed" width="38" height="18" patternUnits="userSpaceOnUse" patternTransform="skewX(-14)">
+      <rect width="38" height="18" fill="transparent"/>
+      <rect y="7" width="38" height="3" fill="#fff" opacity=".18"/>
+    </pattern>
+  </defs>
+
+  <rect width="900" height="260" fill="transparent"/>
+  <g filter="url(#hardShadow)">
+    <polygon points="44,42 744,18 854,68 812,211 98,236 20,181" fill="#040404"/>
+    <polygon points="79,64 712,42 815,81 779,190 108,212 49,174" fill="url(#redSlash)"/>
+    <polygon points="107,79 664,58 769,91 742,176 128,196 78,163" fill="#050505"/>
+    <polygon points="133,94 713,71 742,103 715,157 151,178 105,150" fill="url(#speed)"/>
+  </g>
+
+  <g filter="url(#hotGlow)" opacity=".98">
+    <polygon points="58,109 104,91 89,128" fill="#ffd60a"/>
+    <polygon points="806,116 861,96 837,143" fill="#ffd60a"/>
+    <polygon points="118,216 178,187 164,232" fill="#7bdff2"/>
+    <polygon points="752,33 812,14 786,55" fill="#7bdff2"/>
+    <path d="M44 151 C168 106 258 111 387 68 C503 29 641 43 839 76" fill="none" stroke="#fff" stroke-width="8" opacity=".95"/>
+    <path d="M37 184 C203 140 350 163 519 112 C635 77 726 83 858 105" fill="none" stroke="#fff" stroke-width="4" opacity=".78"/>
+  </g>
+
+  <g filter="url(#hardShadow)">
+    <text x="154" y="112"
+      font-family="Impact, 'Arial Black', 'Microsoft YaHei', sans-serif"
+      font-size="72" font-weight="900" letter-spacing="2"
+      fill="#ffed00" stroke="#111" stroke-width="8" paint-order="stroke">
+      命运食物
+    </text>
+    <text x="142" y="184"
+      font-family="Impact, 'Arial Black', 'Microsoft YaHei', sans-serif"
+      font-size="68" font-weight="900" letter-spacing="1"
+      fill="#ffffff" stroke="#111" stroke-width="9" paint-order="stroke">
+      处决老虎机
+    </text>
+  </g>
+
+  <g>
+    <polygon points="626,44 815,33 798,63 611,73" fill="#fff"/>
+    <text x="642" y="60"
+      font-family="Impact, 'Arial Black', sans-serif"
+      font-size="25" font-weight="900" letter-spacing="4"
+      fill="#000" transform="rotate(-3 642 60)">
+      FOOD JACKPOT
+    </text>
+    <polygon points="92,42 217,36 202,66 79,72" fill="#fff"/>
+    <text x="102" y="61"
+      font-family="Impact, 'Arial Black', sans-serif"
+      font-size="24" font-weight="900" letter-spacing="3"
+      fill="#000" transform="rotate(-3 102 61)">
+      P5 STYLE
+    </text>
+  </g>
+
+  <g opacity=".98">
+    <circle cx="755" cy="141" r="24" fill="#fff" stroke="#111" stroke-width="7"/>
+    <path d="M742 134 h22 l-9 31 h-21 z" fill="#ffd60a" stroke="#111" stroke-width="5"/>
+    <path d="M759 89 c18 13 20 31 6 48" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+    <path d="M729 88 c-12 14-11 30 4 47" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+  </g>
+</svg>
