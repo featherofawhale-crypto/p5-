@@ -50,6 +50,7 @@ const SFX_ASSETS = {
 };
 const SFX_CREDITS = 'Additional game UI SFX: Kenney UI Audio via Calinou/kenney-ui-audio on GitHub, CC0 1.0.';
 window.__FOOD_HEIST_SFX_CREDITS__ = SFX_CREDITS;
+const MANGA_PANEL_LABELS = ['BENTO', 'SPICE', 'HEAT', 'LUCK', 'RARE', 'COMBO', 'KCAL', 'MENU', 'TARGET', 'DESTINY'];
 const $ = (id) => document.getElementById(id);
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 let cursorTimer;
@@ -87,6 +88,7 @@ let masterGain;
 let compressor;
 let bgmFadeToken = 0;
 let bgmDuckTimer;
+let audioUnlocked = false;
 const sampleCache = new Map();
 
 const bgm = $('bgm');
@@ -132,6 +134,22 @@ function switchBgm({ play = true, cue = true } = {}) {
 
 function pickFood() {
   return randomFood(foods, Math.random, rarityWeights);
+}
+
+function shuffled(list) {
+  return [...list].sort(() => Math.random() - 0.5);
+}
+
+function pickForeshadowFoods(count) {
+  const picked = [];
+  const seen = new Set();
+  while (picked.length < count && seen.size < foods.length) {
+    const food = pickFood();
+    if (seen.has(food.name)) continue;
+    seen.add(food.name);
+    picked.push(food);
+  }
+  return picked;
 }
 
 function loadFoods() {
@@ -203,6 +221,23 @@ function loadApiConfig() {
 
 function saveApiConfig(config) {
   localStorage.setItem(API_CONFIG_KEY, JSON.stringify(config));
+}
+
+function unlockAudio() {
+  if (muted) return;
+  audioCtx();
+  preloadSamples();
+  setBgmVolume(userBgmVolume());
+  bgm.play()
+    .then(() => {
+      audioUnlocked = true;
+      document.documentElement.dataset.audioUnlocked = 'true';
+      delete document.documentElement.dataset.audioError;
+    })
+    .catch((error) => {
+      document.documentElement.dataset.audioUnlocked = 'false';
+      document.documentElement.dataset.audioError = error?.name || 'play-blocked';
+    });
 }
 
 function audioCtx() {
@@ -298,16 +333,19 @@ function voiceChop({ vowel = 'ha', freq = 260, dur = 0.22, gain = 0.034, slide =
 
 function playSample(name, volume = 0.32, rate = 1) {
   if (muted || !SFX_ASSETS[name]) return;
-  let audio = sampleCache.get(name);
-  if (!audio) {
-    audio = new Audio(SFX_ASSETS[name]);
-    audio.preload = 'auto';
-    sampleCache.set(name, audio);
-  }
-  const instance = audio.cloneNode();
+  const instance = new Audio(SFX_ASSETS[name]);
   instance.volume = volume;
   instance.playbackRate = rate;
   instance.play().catch(() => {});
+}
+
+function preloadSamples() {
+  Object.entries(SFX_ASSETS).forEach(([name, src]) => {
+    if (sampleCache.has(name)) return;
+    const audio = new Audio(src);
+    audio.preload = 'auto';
+    sampleCache.set(name, audio);
+  });
 }
 
 function duckMusic(amount = 0.45, ms = 680) {
@@ -411,8 +449,10 @@ function cut(type, food) {
   }
   if (type === 'slash') cutin.innerHTML = '<div class="cutSlashA"></div><div class="cutSlashB"></div>';
   if (type === 'manga') {
-    cutin.innerHTML = '<div class="manga">' + ['TARGET', 'MENU', 'CALORIE', 'DESTINY'].map((x, i) => {
-      const shadow = pickFood();
+    const labels = shuffled(MANGA_PANEL_LABELS).slice(0, 4);
+    const shadows = pickForeshadowFoods(4);
+    cutin.innerHTML = '<div class="manga">' + labels.map((x, i) => {
+      const shadow = shadows[i] || pickFood();
       return `<div class="panel" style="animation-delay:${i * 0.1}s"><div class="panelFood">${foodArt(shadow, 150)}</div><span>${x}</span></div>`;
     }).join('') + '</div>';
   }
@@ -424,8 +464,7 @@ async function startRoll() {
   if (spinning) return;
   pinViewport();
   document.body.classList.add('cursorHidden');
-  audioCtx();
-  bgm.play().catch(() => {});
+  unlockAudio();
   spinning = true;
   $('rollBtn').disabled = true;
   $('rollBtn').textContent = 'EXECUTING...';
@@ -713,9 +752,11 @@ initBackground();
 initFoodIconForm();
 wireEvents();
 initApiPanel();
+document.addEventListener('pointerdown', unlockAudio, { capture: true });
+document.addEventListener('touchstart', unlockAudio, { capture: true, passive: true });
 renderOddsForm();
 renderAdmin();
 renderHistory();
-drawReels([foods[20], foods[43], foods[8]]);
+drawReels([pickFood(), pickFood(), pickFood()]);
 drawResult(foods[0], { animate: false });
 hideCursorSoon();

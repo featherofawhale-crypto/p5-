@@ -100,15 +100,15 @@
     ],
     warning: [
       { at: -220, role: 'riser', band: 'mid', source: 'tone', freq: 180, dur: 0.28, wave: 'sawtooth', gain: 0.022, slide: 520 },
-      { at: -90, role: 'riser', band: 'mid', source: 'sample', sample: 'magicHit', gain: 0.18, rate: 0.72 },
-      { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'warning', gain: 0.34 },
+      { at: -90, role: 'riser', band: 'mid', source: 'sample', sample: 'magicHit', gain: 0.36, rate: 0.72 },
+      { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'warning', gain: 0.08 },
     { at: 35, role: 'voice', band: 'mid', source: 'voice', vowel: 'oh', freq: 180, dur: 0.24, gain: 0.036, slide: -18 },
     { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 86, dur: 0.42, wave: 'sawtooth', gain: 0.046, slide: -24 },
       { at: 150, role: 'sparkle', band: 'high', source: 'tone', freq: 980, dur: 0.11, wave: 'square', gain: 0.026 },
     { at: 430, role: 'sparkle', band: 'high', source: 'tone', freq: 740, dur: 0.09, wave: 'square', gain: 0.018 },
   ],
     suspense: [
-      { at: -420, role: 'riser', band: 'mid', source: 'sample', sample: 'suspenseRise', gain: 0.26, rate: 0.82 },
+      { at: -420, role: 'riser', band: 'mid', source: 'sample', sample: 'suspenseRise', gain: 0.42, rate: 0.82 },
       { at: -360, role: 'riser', band: 'low', source: 'tone', freq: 72, dur: 0.46, wave: 'sawtooth', gain: 0.05, slide: 38 },
     { at: -240, role: 'riser', band: 'mid', source: 'noise', dur: 0.54, gain: 0.038, filter: 420, filterType: 'bandpass' },
     { at: 0, role: 'impact', band: 'low', source: 'tone', freq: 96, dur: 0.12, wave: 'triangle', gain: 0.038 },
@@ -116,20 +116,20 @@
   ],
     lock: [
       { at: -40, role: 'riser', band: 'mid', source: 'noise', dur: 0.12, gain: 0.035 },
-      { at: -8, role: 'impact', band: 'mid', source: 'sample', sample: 'lockClack', gain: 0.28, rate: 0.95 },
+      { at: -8, role: 'impact', band: 'mid', source: 'sample', sample: 'lockClack', gain: 0.46, rate: 0.95 },
       { at: 0, role: 'impact', band: 'low', source: 'tone', freq: 118, dur: 0.08, wave: 'square', gain: 0.056 },
       { at: 82, role: 'sub', band: 'low', source: 'tone', freq: 68, dur: 0.2, wave: 'sawtooth', gain: 0.064 },
       { at: 130, role: 'tail', band: 'mid', source: 'sample', sample: 'click', gain: 0.14 },
   ],
     reveal: [
       { at: -680, role: 'riser', band: 'mid', source: 'noise', dur: 0.86, gain: 0.045, filter: 620, filterType: 'bandpass' },
-      { at: -560, role: 'riser', band: 'mid', source: 'sample', sample: 'suspenseRise', gain: 0.24, rate: 0.72 },
+      { at: -560, role: 'riser', band: 'mid', source: 'sample', sample: 'suspenseRise', gain: 0.42, rate: 0.72 },
       { at: -420, role: 'riser', band: 'high', source: 'tone', freq: 360, dur: 0.5, wave: 'sawtooth', gain: 0.026, slide: 1560 },
     { at: -90, role: 'impact', band: 'mid', source: 'sample', sample: 'tick', gain: 0.18, rate: 0.72 },
     { at: -55, role: 'voice', band: 'mid', source: 'voice', vowel: 'hey', freq: 260, dur: 0.2, gain: 0.032, slide: 72 },
       { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 48, dur: 0.62, wave: 'sawtooth', gain: 0.12, slide: -14 },
-      { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.58 },
-      { at: 32, role: 'impact', band: 'mid', source: 'sample', sample: 'rewardPop', gain: 0.3, rate: 1.08 },
+      { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.14 },
+      { at: 32, role: 'impact', band: 'mid', source: 'sample', sample: 'rewardPop', gain: 0.58, rate: 1.08 },
     { at: 18, role: 'impact', band: 'mid', source: 'noise', dur: 0.5, gain: 0.09, filter: 900, filterType: 'lowpass' },
     { at: 58, role: 'voice', band: 'mid', source: 'voice', vowel: 'ha', freq: 330, dur: 0.22, gain: 0.038, slide: 96 },
     { at: 82, role: 'sparkle', band: 'high', source: 'tone', freq: 1450, dur: 0.12, wave: 'triangle', gain: 0.044, slide: 720 },
@@ -138,17 +138,17 @@
     { at: 610, role: 'tail', band: 'mid', source: 'tone', freq: 760, dur: 0.34, wave: 'sine', gain: 0.022, slide: -260 },
   ],
     shine: [
-      { at: -12, role: 'sparkle', band: 'high', source: 'sample', sample: 'shineChime', gain: 0.22, rate: 1.12 },
+      { at: -12, role: 'sparkle', band: 'high', source: 'sample', sample: 'shineChime', gain: 0.42, rate: 1.12 },
       { at: 0, role: 'sparkle', band: 'high', source: 'tone', freq: 1500, dur: 0.08, wave: 'sine', gain: 0.024 },
       { at: 70, role: 'sparkle', band: 'high', source: 'tone', freq: 1900, dur: 0.08, wave: 'sine', gain: 0.022 },
       { at: 140, role: 'sparkle', band: 'high', source: 'tone', freq: 2400, dur: 0.08, wave: 'sine', gain: 0.02 },
     { at: 220, role: 'tail', band: 'mid', source: 'tone', freq: 1100, dur: 0.18, wave: 'triangle', gain: 0.014 },
   ],
     jackpot: [
-      { at: -30, role: 'impact', band: 'mid', source: 'sample', sample: 'magicHit', gain: 0.24, rate: 0.92 },
-      { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.3, rate: 1.18 },
+      { at: -30, role: 'impact', band: 'mid', source: 'sample', sample: 'magicHit', gain: 0.48, rate: 0.92 },
+      { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.1, rate: 1.18 },
       { at: 8, role: 'voice', band: 'mid', source: 'voice', vowel: 'wow', freq: 290, dur: 0.34, gain: 0.046, slide: 180 },
-      { at: 96, role: 'sparkle', band: 'high', source: 'sample', sample: 'jackpotFanfare', gain: 0.28, rate: 1.08 },
+      { at: 96, role: 'sparkle', band: 'high', source: 'sample', sample: 'jackpotFanfare', gain: 0.52, rate: 1.08 },
     { at: 20, role: 'sparkle', band: 'high', source: 'tone', freq: 1046, dur: 0.13, wave: 'triangle', gain: 0.046 },
     { at: 130, role: 'sparkle', band: 'high', source: 'tone', freq: 1318, dur: 0.13, wave: 'triangle', gain: 0.044 },
     { at: 240, role: 'sparkle', band: 'high', source: 'tone', freq: 1568, dur: 0.16, wave: 'triangle', gain: 0.05 },
@@ -191,6 +191,7 @@
   };
   const SFX_CREDITS = 'Additional game UI SFX: Kenney UI Audio via Calinou/kenney-ui-audio on GitHub, CC0 1.0.';
   window.__FOOD_HEIST_SFX_CREDITS__ = SFX_CREDITS;
+  const MANGA_PANEL_LABELS = ['BENTO', 'SPICE', 'HEAT', 'LUCK', 'RARE', 'COMBO', 'KCAL', 'MENU', 'TARGET', 'DESTINY'];
   const $ = (id) => document.getElementById(id);
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   let cursorTimer;
@@ -520,6 +521,7 @@
   let compressor;
   let bgmFadeToken = 0;
   let bgmDuckTimer;
+  let audioUnlocked = false;
   const sampleCache = new Map();
   const bgm = $('bgm');
   bgm.volume = 0.18;
@@ -560,6 +562,20 @@
   }
   function pickFood() {
     return randomFood(foods, Math.random, rarityWeights);
+  }
+  function shuffled(list) {
+    return [...list].sort(() => Math.random() - 0.5);
+  }
+  function pickForeshadowFoods(count) {
+    const picked = [];
+    const seen = new Set();
+    while (picked.length < count && seen.size < foods.length) {
+      const food = pickFood();
+      if (seen.has(food.name)) continue;
+      seen.add(food.name);
+      picked.push(food);
+    }
+    return picked;
   }
 
   function loadFoods() {
@@ -623,6 +639,20 @@
   }
   function saveApiConfig(config) {
     localStorage.setItem(API_CONFIG_KEY, JSON.stringify(config));
+  }
+  function unlockAudio() {
+    if (muted) return;
+    audioCtx();
+    preloadSamples();
+    setBgmVolume(userBgmVolume());
+    bgm.play().then(() => {
+      audioUnlocked = true;
+      document.documentElement.dataset.audioUnlocked = 'true';
+      delete document.documentElement.dataset.audioError;
+    }).catch((error) => {
+      document.documentElement.dataset.audioUnlocked = 'false';
+      document.documentElement.dataset.audioError = error?.name || 'play-blocked';
+    });
   }
   function audioCtx() {
     if (!ctx) {
@@ -713,16 +743,18 @@
   }
   function playSample(name, volume = 0.32, rate = 1) {
     if (muted || !SFX_ASSETS[name]) return;
-    let audio = sampleCache.get(name);
-    if (!audio) {
-      audio = new Audio(SFX_ASSETS[name]);
-      audio.preload = 'auto';
-      sampleCache.set(name, audio);
-    }
-    const instance = audio.cloneNode();
+    const instance = new Audio(SFX_ASSETS[name]);
     instance.volume = volume;
     instance.playbackRate = rate;
     instance.play().catch(() => {});
+  }
+  function preloadSamples() {
+    Object.entries(SFX_ASSETS).forEach(([name, src]) => {
+      if (sampleCache.has(name)) return;
+      const audio = new Audio(src);
+      audio.preload = 'auto';
+      sampleCache.set(name, audio);
+    });
   }
   function duckMusic(amount = 0.45, ms = 680) {
     if (muted) return;
@@ -816,8 +848,10 @@
     }
     if (type === 'slash') cutin.innerHTML = '<div class="cutSlashA"></div><div class="cutSlashB"></div>';
     if (type === 'manga') {
-      cutin.innerHTML = '<div class="manga">' + ['TARGET', 'MENU', 'CALORIE', 'DESTINY'].map((x, i) => {
-        const shadow = pickFood();
+      const labels = shuffled(MANGA_PANEL_LABELS).slice(0, 4);
+      const shadows = pickForeshadowFoods(4);
+      cutin.innerHTML = '<div class="manga">' + labels.map((x, i) => {
+        const shadow = shadows[i] || pickFood();
         return `<div class="panel" style="animation-delay:${i * 0.1}s"><div class="panelFood">${foodArt(shadow, 150)}</div><span>${x}</span></div>`;
       }).join('') + '</div>';
     }
@@ -828,8 +862,7 @@
     if (spinning) return;
     pinViewport();
     document.body.classList.add('cursorHidden');
-    audioCtx();
-    bgm.play().catch(() => {});
+    unlockAudio();
     spinning = true;
     $('rollBtn').disabled = true;
     $('rollBtn').textContent = 'EXECUTING...';
@@ -1103,10 +1136,12 @@
   initFoodIconForm();
   wireEvents();
   initApiPanel();
+  document.addEventListener('pointerdown', unlockAudio, { capture: true });
+  document.addEventListener('touchstart', unlockAudio, { capture: true, passive: true });
   renderOddsForm();
   renderAdmin();
   renderHistory();
-  drawReels([foods[20], foods[43], foods[8]]);
+  drawReels([pickFood(), pickFood(), pickFood()]);
   drawResult(foods[0], { animate: false });
   hideCursorSoon();
 }());
