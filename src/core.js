@@ -116,6 +116,7 @@ export const SOUND_CUE_RECIPES = {
   warning: [
     { at: -220, role: 'riser', band: 'mid', source: 'tone', freq: 180, dur: 0.28, wave: 'sawtooth', gain: 0.022, slide: 520 },
     { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'warning', gain: 0.34 },
+    { at: 35, role: 'voice', band: 'mid', source: 'voice', vowel: 'oh', freq: 180, dur: 0.24, gain: 0.036, slide: -18 },
     { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 86, dur: 0.42, wave: 'sawtooth', gain: 0.046, slide: -24 },
     { at: 150, role: 'sparkle', band: 'high', source: 'tone', freq: 980, dur: 0.11, wave: 'square', gain: 0.026 },
     { at: 430, role: 'sparkle', band: 'high', source: 'tone', freq: 740, dur: 0.09, wave: 'square', gain: 0.018 },
@@ -136,9 +137,11 @@ export const SOUND_CUE_RECIPES = {
     { at: -680, role: 'riser', band: 'mid', source: 'noise', dur: 0.86, gain: 0.045, filter: 620, filterType: 'bandpass' },
     { at: -420, role: 'riser', band: 'high', source: 'tone', freq: 360, dur: 0.5, wave: 'sawtooth', gain: 0.026, slide: 1560 },
     { at: -90, role: 'impact', band: 'mid', source: 'sample', sample: 'tick', gain: 0.18, rate: 0.72 },
+    { at: -55, role: 'voice', band: 'mid', source: 'voice', vowel: 'hey', freq: 260, dur: 0.2, gain: 0.032, slide: 72 },
     { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 48, dur: 0.62, wave: 'sawtooth', gain: 0.12, slide: -14 },
     { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.58 },
     { at: 18, role: 'impact', band: 'mid', source: 'noise', dur: 0.5, gain: 0.09, filter: 900, filterType: 'lowpass' },
+    { at: 58, role: 'voice', band: 'mid', source: 'voice', vowel: 'ha', freq: 330, dur: 0.22, gain: 0.038, slide: 96 },
     { at: 82, role: 'sparkle', band: 'high', source: 'tone', freq: 1450, dur: 0.12, wave: 'triangle', gain: 0.044, slide: 720 },
     { at: 230, role: 'sparkle', band: 'high', source: 'tone', freq: 2250, dur: 0.09, wave: 'sine', gain: 0.03 },
     { at: 380, role: 'sparkle', band: 'high', source: 'tone', freq: 2850, dur: 0.08, wave: 'sine', gain: 0.022 },
@@ -152,6 +155,7 @@ export const SOUND_CUE_RECIPES = {
   ],
   jackpot: [
     { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.34, rate: 1.18 },
+    { at: 8, role: 'voice', band: 'mid', source: 'voice', vowel: 'wow', freq: 290, dur: 0.34, gain: 0.046, slide: 180 },
     { at: 20, role: 'sparkle', band: 'high', source: 'tone', freq: 1046, dur: 0.13, wave: 'triangle', gain: 0.046 },
     { at: 130, role: 'sparkle', band: 'high', source: 'tone', freq: 1318, dur: 0.13, wave: 'triangle', gain: 0.044 },
     { at: 240, role: 'sparkle', band: 'high', source: 'tone', freq: 1568, dur: 0.16, wave: 'triangle', gain: 0.05 },

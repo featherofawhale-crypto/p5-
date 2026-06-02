@@ -100,7 +100,8 @@
   warning: [
     { at: -220, role: 'riser', band: 'mid', source: 'tone', freq: 180, dur: 0.28, wave: 'sawtooth', gain: 0.022, slide: 520 },
     { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'warning', gain: 0.34 },
-      { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 86, dur: 0.42, wave: 'sawtooth', gain: 0.046, slide: -24 },
+    { at: 35, role: 'voice', band: 'mid', source: 'voice', vowel: 'oh', freq: 180, dur: 0.24, gain: 0.036, slide: -18 },
+    { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 86, dur: 0.42, wave: 'sawtooth', gain: 0.046, slide: -24 },
       { at: 150, role: 'sparkle', band: 'high', source: 'tone', freq: 980, dur: 0.11, wave: 'square', gain: 0.026 },
     { at: 430, role: 'sparkle', band: 'high', source: 'tone', freq: 740, dur: 0.09, wave: 'square', gain: 0.018 },
   ],
@@ -120,9 +121,11 @@
     { at: -680, role: 'riser', band: 'mid', source: 'noise', dur: 0.86, gain: 0.045, filter: 620, filterType: 'bandpass' },
     { at: -420, role: 'riser', band: 'high', source: 'tone', freq: 360, dur: 0.5, wave: 'sawtooth', gain: 0.026, slide: 1560 },
     { at: -90, role: 'impact', band: 'mid', source: 'sample', sample: 'tick', gain: 0.18, rate: 0.72 },
+    { at: -55, role: 'voice', band: 'mid', source: 'voice', vowel: 'hey', freq: 260, dur: 0.2, gain: 0.032, slide: 72 },
     { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 48, dur: 0.62, wave: 'sawtooth', gain: 0.12, slide: -14 },
     { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.58 },
     { at: 18, role: 'impact', band: 'mid', source: 'noise', dur: 0.5, gain: 0.09, filter: 900, filterType: 'lowpass' },
+    { at: 58, role: 'voice', band: 'mid', source: 'voice', vowel: 'ha', freq: 330, dur: 0.22, gain: 0.038, slide: 96 },
     { at: 82, role: 'sparkle', band: 'high', source: 'tone', freq: 1450, dur: 0.12, wave: 'triangle', gain: 0.044, slide: 720 },
     { at: 230, role: 'sparkle', band: 'high', source: 'tone', freq: 2250, dur: 0.09, wave: 'sine', gain: 0.03 },
     { at: 380, role: 'sparkle', band: 'high', source: 'tone', freq: 2850, dur: 0.08, wave: 'sine', gain: 0.022 },
@@ -136,6 +139,7 @@
   ],
   jackpot: [
     { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.34, rate: 1.18 },
+    { at: 8, role: 'voice', band: 'mid', source: 'voice', vowel: 'wow', freq: 290, dur: 0.34, gain: 0.046, slide: 180 },
     { at: 20, role: 'sparkle', band: 'high', source: 'tone', freq: 1046, dur: 0.13, wave: 'triangle', gain: 0.046 },
     { at: 130, role: 'sparkle', band: 'high', source: 'tone', freq: 1318, dur: 0.13, wave: 'triangle', gain: 0.044 },
     { at: 240, role: 'sparkle', band: 'high', source: 'tone', freq: 1568, dur: 0.16, wave: 'triangle', gain: 0.05 },
@@ -658,6 +662,38 @@
     g.connect(masterGain);
     src.start();
   }
+  function voiceChop({ vowel = 'ha', freq = 260, dur = 0.22, gain = 0.034, slide = 0 } = {}) {
+    if (muted) return;
+    const c = audioCtx();
+    const o = c.createOscillator();
+    const amp = c.createGain();
+    const formants = {
+      ha: [[760, 6, 0.88], [1320, 9, 0.58], [2600, 10, 0.28]],
+      hey: [[520, 7, 0.72], [1880, 11, 0.64], [2800, 9, 0.24]],
+      oh: [[430, 8, 0.9], [820, 8, 0.62], [2400, 9, 0.18]],
+      wow: [[360, 7, 0.86], [900, 8, 0.62], [2200, 8, 0.24]],
+    }[vowel] || [[700, 8, 0.8], [1200, 9, 0.55], [2500, 8, 0.22]];
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(freq, c.currentTime);
+    if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(60, freq + slide), c.currentTime + dur);
+    amp.gain.setValueAtTime(0.0001, c.currentTime);
+    amp.gain.exponentialRampToValueAtTime(gain, c.currentTime + 0.025);
+    amp.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + dur);
+    formants.forEach(([frequency, q, mix]) => {
+      const filter = c.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(frequency, c.currentTime);
+      filter.Q.value = q;
+      const level = c.createGain();
+      level.gain.value = mix;
+      o.connect(filter);
+      filter.connect(level);
+      level.connect(amp);
+    });
+    amp.connect(masterGain);
+    o.start();
+    o.stop(c.currentTime + dur);
+  }
   function playSample(name, volume = 0.32, rate = 1) {
     if (muted || !SFX_ASSETS[name]) return;
     let audio = sampleCache.get(name);
@@ -686,6 +722,7 @@
       if (layer.role === 'impact' && layer.band === 'mid') duckMusic(0.55, 420);
       if (layer.source === 'sample') playSample(layer.sample, layer.gain, layer.rate || 1);
       if (layer.source === 'noise') noise(layer.dur, layer.gain, layer.filter || 0, layer.filterType || 'bandpass');
+      if (layer.source === 'voice') voiceChop(layer);
       if (layer.source === 'tone') {
         const freq = layer.freq + (layer.pitchStep ? pitchOffset * layer.pitchStep : 0);
         tone(freq, layer.dur, layer.wave, layer.gain, layer.slide || 0);

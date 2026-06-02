@@ -255,6 +255,39 @@ function noise(dur = 0.14, gain = 0.045, filter = 0, filterType = 'bandpass') {
   src.start();
 }
 
+function voiceChop({ vowel = 'ha', freq = 260, dur = 0.22, gain = 0.034, slide = 0 } = {}) {
+  if (muted) return;
+  const c = audioCtx();
+  const o = c.createOscillator();
+  const amp = c.createGain();
+  const formants = {
+    ha: [[760, 6, 0.88], [1320, 9, 0.58], [2600, 10, 0.28]],
+    hey: [[520, 7, 0.72], [1880, 11, 0.64], [2800, 9, 0.24]],
+    oh: [[430, 8, 0.9], [820, 8, 0.62], [2400, 9, 0.18]],
+    wow: [[360, 7, 0.86], [900, 8, 0.62], [2200, 8, 0.24]],
+  }[vowel] || [[700, 8, 0.8], [1200, 9, 0.55], [2500, 8, 0.22]];
+  o.type = 'sawtooth';
+  o.frequency.setValueAtTime(freq, c.currentTime);
+  if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(60, freq + slide), c.currentTime + dur);
+  amp.gain.setValueAtTime(0.0001, c.currentTime);
+  amp.gain.exponentialRampToValueAtTime(gain, c.currentTime + 0.025);
+  amp.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + dur);
+  formants.forEach(([frequency, q, mix]) => {
+    const filter = c.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(frequency, c.currentTime);
+    filter.Q.value = q;
+    const level = c.createGain();
+    level.gain.value = mix;
+    o.connect(filter);
+    filter.connect(level);
+    level.connect(amp);
+  });
+  amp.connect(masterGain);
+  o.start();
+  o.stop(c.currentTime + dur);
+}
+
 function playSample(name, volume = 0.32, rate = 1) {
   if (muted || !SFX_ASSETS[name]) return;
   let audio = sampleCache.get(name);
@@ -285,6 +318,7 @@ function playSoundLayer(layer, offset = 0, pitchOffset = 0) {
     if (layer.role === 'impact' && layer.band === 'mid') duckMusic(0.55, 420);
     if (layer.source === 'sample') playSample(layer.sample, layer.gain, layer.rate || 1);
     if (layer.source === 'noise') noise(layer.dur, layer.gain, layer.filter || 0, layer.filterType || 'bandpass');
+    if (layer.source === 'voice') voiceChop(layer);
     if (layer.source === 'tone') {
       const freq = layer.freq + (layer.pitchStep ? pitchOffset * layer.pitchStep : 0);
       tone(freq, layer.dur, layer.wave, layer.gain, layer.slide || 0);

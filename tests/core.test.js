@@ -211,10 +211,11 @@ test('getSoundCuePlan layers editorial sound roles across frequency bands', () =
   const roles = new Set(reveal.map((layer) => layer.role));
   const bands = new Set(reveal.map((layer) => layer.band));
 
-  assert.deepEqual([...roles].sort(), ['impact', 'riser', 'sparkle', 'sub', 'tail']);
+  assert.deepEqual([...roles].sort(), ['impact', 'riser', 'sparkle', 'sub', 'tail', 'voice']);
   assert.equal(bands.has('low'), true);
   assert.equal(bands.has('mid'), true);
   assert.equal(bands.has('high'), true);
+  assert.equal(reveal.some((layer) => layer.source === 'voice'), true);
   assert.equal(reveal.some((layer) => layer.at < 0), true);
   assert.equal(reveal.some((layer) => layer.at > 0), true);
   assert.equal(reveal.length >= 10, true);
