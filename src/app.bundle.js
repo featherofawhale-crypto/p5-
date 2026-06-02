@@ -856,7 +856,7 @@
       }).join('') + '</div>';
     }
     if (type === 'warning') cutin.innerHTML = '<div class="black"></div><div class="redFlash"></div><div class="warningBox"><div class="warningText">WARNING</div><div class="warningSub">RARE DESTINY DETECTED</div></div>';
-    if (type === 'execute') cutin.innerHTML = '<div class="execute"><span>揭晓中</span><b>答案即将公开</b></div>';
+    if (type === 'execute') cutin.innerHTML = '<div class="execute"><span>ALL OUT</span><b>DESTINY UNLOCKING</b></div>';
   }
   function firePrizeConfetti(food) {
     const confetti = window.confetti;
