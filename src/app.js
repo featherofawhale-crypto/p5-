@@ -299,7 +299,7 @@ function drawResult(food) {
     <div class="resultFx"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="resultHead"><div class="rarityBig">${label}</div><div class="raritySignal">${food.rarity}</div></div>
     <div class="cardSpread">
-      <div class="drawCard winnerCard" data-rarity="${food.rarity}"><div class="cardTop">${label}</div><div class="foodArt">${foodArt(food, 132)}</div><div class="destiny">TODAY'S DESTINY</div><div class="resultName">${food.name}</div></div>
+      <div class="drawCard winnerCard" data-rarity="${food.rarity}"><div class="cardTop">${label}</div><div class="winnerIcon">${foodArt(food, 132)}</div><div class="resultCopy"><div class="destiny">TODAY'S DESTINY</div><div class="resultName">${food.name}</div></div></div>
     </div>
     <div class="stats"><div class="stat"><small>KCAL</small><b>${food.calories}</b></div><div class="stat"><small>HEALTH</small><b>${food.health}</b></div><div class="stat"><small>控糖</small><b>${food.sugarSafe ? 'OK' : 'NO'}</b></div></div>
   </div>`;
@@ -371,6 +371,7 @@ async function startRoll() {
   clearInterval(inter);
   sfx.revealCharge();
   await delay(520);
+  cut('');
   $('flash').classList.remove('go');
   $('flash').classList.add('burst');
   drawResult(final);
@@ -380,7 +381,6 @@ async function startRoll() {
   setPhase("TODAY'S DESTINY");
   sfx.jackpot();
   await delay(620);
-  cut('');
   sfx.shine();
   $('flash').classList.remove('burst');
   $('machine').classList.remove('shake', 'finalCharge');
