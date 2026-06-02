@@ -651,13 +651,14 @@
   }
   function drawResult(food) {
     const label = food.rarity === 'SSR' ? 'EXECUTION SSR' : food.rarity === 'SR' ? 'SUPER RARE' : food.rarity === 'R' ? 'RARE' : 'NORMAL';
+    const nameSize = food.name.length >= 7 ? 'compact' : food.name.length >= 5 ? 'long' : 'normal';
     $('result').classList.remove('reveal');
     $('result').dataset.rarity = food.rarity;
     $('result').innerHTML = `<div class="resultBody">
     <div class="resultFx"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="resultHead"><div class="rarityBig">${label}</div><div class="raritySignal">${food.rarity}</div></div>
     <div class="cardSpread">
-      <div class="drawCard winnerCard" data-rarity="${food.rarity}"><div class="cardTop">${label}</div><div class="winnerIcon">${foodArt(food, 132)}</div><div class="resultCopy"><div class="destiny">TODAY'S DESTINY</div><div class="resultName">${food.name}</div></div></div>
+      <div class="drawCard winnerCard" data-rarity="${food.rarity}" data-name-size="${nameSize}"><div class="cardTop">${label}</div><div class="winnerIcon">${foodArt(food, 132)}</div><div class="resultCopy"><div class="destiny">TODAY'S DESTINY</div><div class="resultName">${food.name}</div></div></div>
     </div>
       <div class="stats"><div class="stat"><small>KCAL</small><b>${food.calories}</b></div><div class="stat"><small>HEALTH</small><b>${food.health}</b></div><div class="stat"><small>控糖</small><b>${food.sugarSafe ? 'OK' : 'NO'}</b></div></div>
     </div>`;
