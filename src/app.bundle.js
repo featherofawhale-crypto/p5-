@@ -198,6 +198,12 @@
       .replace(/套餐$/u, '')
       .trim();
   }
+  function foodNameSize(name) {
+    const length = String(name ?? '').trim().length;
+    if (length >= 7) return 'compact';
+    if (length >= 5) return 'long';
+    return 'normal';
+  }
   function normalizeFood(input, fallbackId = 1) {
     const name = cleanFoodName(input?.name) || '未命名食物';
     const rarity = RARITIES.has(input?.rarity) ? input.rarity : 'SSR';
@@ -642,7 +648,7 @@
     jackpot() { playLayeredCue('jackpot', 1.15); },
   };
   function foodHTML(food) {
-    return `<div class="foodArt">${foodArt(food)}</div><div class="foodName">${food.name}</div><div class="rarity">${food.rarity}</div>`;
+    return `<div class="foodArt">${foodArt(food)}</div><div class="foodName" data-name-size="${foodNameSize(food.name)}">${food.name}</div><div class="rarity">${food.rarity}</div>`;
   }
   function drawReels(items) {
     items.forEach((food, i) => {
@@ -651,7 +657,7 @@
   }
   function drawResult(food, options = {}) {
     const label = food.rarity === 'SSR' ? 'EXECUTION SSR' : food.rarity === 'SR' ? 'SUPER RARE' : food.rarity === 'R' ? 'RARE' : 'NORMAL';
-    const nameSize = food.name.length >= 7 ? 'compact' : food.name.length >= 5 ? 'long' : 'normal';
+    const nameSize = foodNameSize(food.name);
     const animate = options.animate !== false;
     $('result').classList.remove('reveal');
     $('result').dataset.rarity = food.rarity;

@@ -13,6 +13,7 @@ import {
   extractFoodsFromApiResponse,
   foodArt,
   foodIconPath,
+  foodNameSize,
   getSoundCuePlan,
   normalizeFood,
   normalizeRarityWeights,
@@ -57,6 +58,12 @@ test('cleanFoodName removes game labels from menu names', () => {
   assert.equal(cleanFoodName('命运之麻辣香锅'), '麻辣香锅');
   assert.equal(cleanFoodName('低多边形牛肉面'), '牛肉面');
   assert.equal(cleanFoodName('肉夹馍套餐'), '肉夹馍');
+});
+
+test('foodNameSize classifies compact labels for reel and result cards', () => {
+  assert.equal(foodNameSize('牛肉面'), 'normal');
+  assert.equal(foodNameSize('番茄牛腩汤'), 'long');
+  assert.equal(foodNameSize('控糖蒸鱼套餐饭'), 'compact');
 });
 
 test('createFood appends a normalized admin item with next id', () => {

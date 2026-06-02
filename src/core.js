@@ -293,6 +293,13 @@ export function cleanFoodName(value) {
     .trim();
 }
 
+export function foodNameSize(name) {
+  const length = String(name ?? '').trim().length;
+  if (length >= 7) return 'compact';
+  if (length >= 5) return 'long';
+  return 'normal';
+}
+
 export function normalizeFood(input, fallbackId = 1) {
   const name = cleanFoodName(input?.name) || '未命名食物';
   const rarity = RARITIES.has(input?.rarity) ? input.rarity : 'SSR';
