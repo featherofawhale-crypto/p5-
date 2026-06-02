@@ -19,6 +19,7 @@ import {
 const STORAGE_KEY = 'dinner-slot-foods-v2';
 const API_CONFIG_KEY = 'dinner-slot-api-config-v1';
 const ODDS_CONFIG_KEY = 'dinner-slot-odds-v1';
+const HISTORY_KEY = 'dinner-slot-history-v1';
 const DEFAULT_API_BODY = `{
   "model": "gpt-4o-mini",
   "messages": [
@@ -43,6 +44,7 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 let foods = loadFoods();
 let rarityWeights = loadRarityWeights();
+let drawHistory = loadDrawHistory();
 let spinning = false;
 let bgmIndex = 0;
 let muted = false;
@@ -96,6 +98,31 @@ function loadRarityWeights() {
 
 function saveRarityWeights() {
   localStorage.setItem(ODDS_CONFIG_KEY, JSON.stringify(rarityWeights));
+}
+
+function loadDrawHistory() {
+  try {
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    return Array.isArray(history) ? history.slice(0, 12) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveDrawHistory() {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(drawHistory.slice(0, 12)));
+}
+
+function recordDraw(food) {
+  drawHistory = [{
+    at: new Date().toISOString(),
+    name: food.name,
+    rarity: food.rarity,
+    calories: food.calories,
+    health: food.health,
+    sugarSafe: food.sugarSafe,
+  }, ...drawHistory].slice(0, 12);
+  saveDrawHistory();
 }
 
 function loadApiConfig() {
@@ -324,6 +351,8 @@ async function startRoll() {
   $('flash').classList.remove('go');
   $('flash').classList.add('burst');
   drawResult(final);
+  recordDraw(final);
+  renderHistory();
   setPhase("TODAY'S DESTINY");
   sfx.jackpot();
   await delay(620);
@@ -354,6 +383,18 @@ function renderOddsForm() {
   $('oddsR').value = rarityWeights.R;
   $('oddsSR').value = rarityWeights.SR;
   $('oddsSSR').value = rarityWeights.SSR;
+}
+
+function formatHistoryTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '--:--';
+  return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+}
+
+function renderHistory() {
+  $('historyList').innerHTML = drawHistory.length
+    ? drawHistory.map((item) => `<div class="historyItem"><b>${item.rarity}</b><div><strong>${item.name}</strong><span>${formatHistoryTime(item.at)} · ${item.calories} kcal · HEALTH ${item.health}</span></div><small>${item.sugarSafe ? 'OK' : 'NO'}</small></div>`).join('')
+    : '<div class="emptyHistory">还没有抽奖记录</div>';
 }
 
 function initApiPanel() {
@@ -505,6 +546,14 @@ function wireEvents() {
     renderOddsForm();
     renderAdmin();
   });
+  $('clearHistoryBtn').addEventListener('click', () => {
+    drawHistory = [];
+    saveDrawHistory();
+    renderHistory();
+  });
+  $('exportHistoryBtn').addEventListener('click', () => {
+    $('jsonBox').value = JSON.stringify(drawHistory, null, 2);
+  });
   $('apiReplaceBtn').addEventListener('click', () => generateFoodsFromApi('replace'));
   $('apiAppendBtn').addEventListener('click', () => generateFoodsFromApi('append'));
 }
@@ -514,5 +563,6 @@ wireEvents();
 initApiPanel();
 renderOddsForm();
 renderAdmin();
+renderHistory();
 drawReels([foods[20], foods[43], foods[8]]);
 drawResult(foods[0]);

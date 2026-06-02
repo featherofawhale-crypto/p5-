@@ -50,6 +50,7 @@
   const STORAGE_KEY = 'dinner-slot-foods-v2';
   const API_CONFIG_KEY = 'dinner-slot-api-config-v1';
   const ODDS_CONFIG_KEY = 'dinner-slot-odds-v1';
+  const HISTORY_KEY = 'dinner-slot-history-v1';
   const API_STYLE_PRESETS = [
     { id: 'low-poly-comic', name: '低多边形美漫', prompt: 'low-poly American comic food illustration, bold black ink, angular facets, dramatic red white black palette, readable food silhouette' },
     { id: 'persona-punk', name: '怪盗红黑冲击', prompt: 'stylish phantom-thief game UI food concept, red black white, sharp diagonal composition, high contrast, dramatic reveal card' },
@@ -424,6 +425,7 @@
 
   let foods = loadFoods();
   let rarityWeights = loadRarityWeights();
+  let drawHistory = loadDrawHistory();
   let spinning = false;
   let bgmIndex = 0;
   let muted = false;
@@ -472,6 +474,28 @@
   }
   function saveRarityWeights() {
     localStorage.setItem(ODDS_CONFIG_KEY, JSON.stringify(rarityWeights));
+  }
+  function loadDrawHistory() {
+    try {
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      return Array.isArray(history) ? history.slice(0, 12) : [];
+    } catch {
+      return [];
+    }
+  }
+  function saveDrawHistory() {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(drawHistory.slice(0, 12)));
+  }
+  function recordDraw(food) {
+    drawHistory = [{
+      at: new Date().toISOString(),
+      name: food.name,
+      rarity: food.rarity,
+      calories: food.calories,
+      health: food.health,
+      sugarSafe: food.sugarSafe,
+    }, ...drawHistory].slice(0, 12);
+    saveDrawHistory();
   }
   function loadApiConfig() {
     try {
@@ -682,6 +706,8 @@
     $('flash').classList.remove('go');
     $('flash').classList.add('burst');
     drawResult(final);
+    recordDraw(final);
+    renderHistory();
     setPhase("TODAY'S DESTINY");
     sfx.jackpot();
     await delay(620);
@@ -710,6 +736,16 @@
     $('oddsR').value = rarityWeights.R;
     $('oddsSR').value = rarityWeights.SR;
     $('oddsSSR').value = rarityWeights.SSR;
+  }
+  function formatHistoryTime(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '--:--';
+    return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+  }
+  function renderHistory() {
+    $('historyList').innerHTML = drawHistory.length
+      ? drawHistory.map((item) => `<div class="historyItem"><b>${item.rarity}</b><div><strong>${item.name}</strong><span>${formatHistoryTime(item.at)} · ${item.calories} kcal · HEALTH ${item.health}</span></div><small>${item.sugarSafe ? 'OK' : 'NO'}</small></div>`).join('')
+      : '<div class="emptyHistory">还没有抽奖记录</div>';
   }
   function initApiPanel() {
     $('apiStylePreset').innerHTML = API_STYLE_PRESETS.map((preset) => `<option value="${preset.id}">${preset.name}</option>`).join('');
@@ -856,6 +892,14 @@
       renderOddsForm();
       renderAdmin();
     });
+    $('clearHistoryBtn').addEventListener('click', () => {
+      drawHistory = [];
+      saveDrawHistory();
+      renderHistory();
+    });
+    $('exportHistoryBtn').addEventListener('click', () => {
+      $('jsonBox').value = JSON.stringify(drawHistory, null, 2);
+    });
     $('apiReplaceBtn').addEventListener('click', () => generateFoodsFromApi('replace'));
     $('apiAppendBtn').addEventListener('click', () => generateFoodsFromApi('append'));
   }
@@ -864,6 +908,7 @@
   initApiPanel();
   renderOddsForm();
   renderAdmin();
+  renderHistory();
   drawReels([foods[20], foods[43], foods[8]]);
   drawResult(foods[0]);
 }());
