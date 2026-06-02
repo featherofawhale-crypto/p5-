@@ -35,6 +35,7 @@ const OLD_API_BODY_RE = /Generate \{count\} dinner blind-box foods|Current menu 
 const BGM = [
   { name: 'Last Surprise', src: 'assets/last_surprise.m4a' },
   { name: 'Wake Up Get Up Get', src: 'assets/wake_up_get_up.m4a' },
+  { name: 'What You Wish For', src: 'assets/what_you_wish_for.m4a' },
 ];
 const SFX_ASSETS = {
   click: 'assets/sfx/click.wav',

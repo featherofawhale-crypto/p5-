@@ -1,0 +1,7 @@
+Fluent Emoji food SVG assets
+
+Source: https://github.com/microsoft/fluentui-emoji
+Copyright (c) Microsoft Corporation.
+License: MIT
+
+Imported food-category icons for local app rendering. Attribution is kept in code/assets and is not displayed in the main UI.

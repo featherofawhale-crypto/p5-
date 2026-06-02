@@ -1,4 +1,4 @@
-import test from 'node:test';
+﻿import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   DEFAULT_FOOD_NAMES,
@@ -143,7 +143,7 @@ test('foodArt returns clean comic svg markup without emoji art overlays', () => 
   assert.match(art, /<svg/);
   assert.match(art, /<image/);
   assert.doesNotMatch(art, /class="foodFacet"/);
-  assert.match(art, /assets\/food\/openmoji\//);
+  assert.match(art, /assets\/food\/fluent\//);
   assert.doesNotMatch(art, /🍜|🥘|🍚|🥟|🍲|🥗|🍛|🔥|🥢|🍖|🦀|🍗/);
 });
 
@@ -164,13 +164,13 @@ test('foodArt uses recognizable food-specific silhouettes', () => {
   }
 });
 
-test('foodIconPath maps food kinds to local OpenMoji SVG assets', () => {
-  assert.equal(foodIconPath('noodle'), 'assets/food/openmoji/1F35C.svg');
-  assert.equal(foodIconPath('rice'), 'assets/food/openmoji/1F35A.svg');
-  assert.equal(foodIconPath('pizza'), 'assets/food/openmoji/1F355.svg');
-  assert.equal(foodIconPath('sushi'), 'assets/food/openmoji/1F363.svg');
-  assert.equal(foodIconPath('shrimp'), 'assets/food/openmoji/1F364.svg');
-  assert.equal(foodIconPath('plate'), 'assets/food/openmoji/1F37D.svg');
+test('foodIconPath maps food kinds to local Fluent Emoji SVG assets', () => {
+  assert.equal(foodIconPath('noodle'), 'assets/food/fluent/1F35C.svg');
+  assert.equal(foodIconPath('rice'), 'assets/food/fluent/1F35A.svg');
+  assert.equal(foodIconPath('pizza'), 'assets/food/fluent/1F355.svg');
+  assert.equal(foodIconPath('sushi'), 'assets/food/fluent/1F363.svg');
+  assert.equal(foodIconPath('shrimp'), 'assets/food/fluent/1F364.svg');
+  assert.equal(foodIconPath('plate'), 'assets/food/fluent/1F37D.svg');
 });
 
 test('classifyFood maps readable Chinese names to matching visual categories', () => {
@@ -193,7 +193,7 @@ test('foodArt uses attributed local image assets for food art', () => {
   assert.match(art, /data-food-kind="tofu"/);
   assert.match(art, />TOFU</);
   assert.match(art, /<image/);
-  assert.match(art, /assets\/food\/openmoji\/1F9C8\.svg/);
+  assert.match(art, /assets\/food\/fluent\/1F9C8\.svg/);
 });
 
 test('manual icon kind overrides automatic food classification', () => {
@@ -203,7 +203,7 @@ test('manual icon kind overrides automatic food classification', () => {
   assert.equal(FOOD_ICON_OPTIONS.some((item) => item.value === 'sushi'), true);
   assert.equal(food.iconKind, 'sushi');
   assert.match(art, /data-food-kind="sushi"/);
-  assert.match(art, /assets\/food\/openmoji\/1F363\.svg/);
+  assert.match(art, /assets\/food\/fluent\/1F363\.svg/);
 });
 
 test('admin icon picker uses readable Chinese labels', () => {

@@ -288,25 +288,25 @@ function foodShape(kind, colors) {
 }
 
 export function foodIconPath(kind) {
-  // OpenMoji food assets live in assets/food/openmoji/ATTRIBUTION.txt.
+  // Fluent Emoji food assets live in assets/food/fluent/ATTRIBUTION.txt.
   const icons = {
-    noodle: 'assets/food/openmoji/1F35C.svg',
-    rice: 'assets/food/openmoji/1F35A.svg',
-    dumpling: 'assets/food/openmoji/1F95F.svg',
-    fish: 'assets/food/openmoji/1F41F.svg',
-    hotpot: 'assets/food/openmoji/1F372.svg',
-    skewer: 'assets/food/openmoji/1F362.svg',
-    meat: 'assets/food/openmoji/1F969.svg',
-    tofu: 'assets/food/openmoji/1F9C8.svg',
-    salad: 'assets/food/openmoji/1F957.svg',
-    pizza: 'assets/food/openmoji/1F355.svg',
-    burger: 'assets/food/openmoji/1F354.svg',
-    curry: 'assets/food/openmoji/1F35B.svg',
-    sushi: 'assets/food/openmoji/1F363.svg',
-    wrap: 'assets/food/openmoji/1F32F.svg',
-    shrimp: 'assets/food/openmoji/1F364.svg',
-    bread: 'assets/food/openmoji/1F35E.svg',
-    plate: 'assets/food/openmoji/1F37D.svg',
+    noodle: 'assets/food/fluent/1F35C.svg',
+    rice: 'assets/food/fluent/1F35A.svg',
+    dumpling: 'assets/food/fluent/1F95F.svg',
+    fish: 'assets/food/fluent/1F41F.svg',
+    hotpot: 'assets/food/fluent/1F372.svg',
+    skewer: 'assets/food/fluent/1F362.svg',
+    meat: 'assets/food/fluent/1F969.svg',
+    tofu: 'assets/food/fluent/1F9C8.svg',
+    salad: 'assets/food/fluent/1F957.svg',
+    pizza: 'assets/food/fluent/1F355.svg',
+    burger: 'assets/food/fluent/1F354.svg',
+    curry: 'assets/food/fluent/1F35B.svg',
+    sushi: 'assets/food/fluent/1F363.svg',
+    wrap: 'assets/food/fluent/1F32F.svg',
+    shrimp: 'assets/food/fluent/1F364.svg',
+    bread: 'assets/food/fluent/1F35E.svg',
+    plate: 'assets/food/fluent/1F37D.svg',
   };
   return icons[kind] || icons.plate;
 }
