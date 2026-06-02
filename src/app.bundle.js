@@ -822,6 +822,11 @@
       bodyTemplate: $('apiBody').value,
     };
   }
+  function setApiBusy(busy) {
+    $('apiReplaceBtn').disabled = busy;
+    $('apiAppendBtn').disabled = busy;
+    $('apiStatus').setAttribute('aria-busy', String(busy));
+  }
   async function generateFoodsFromApi(mode) {
     const config = readApiPanel();
     saveApiConfig(config);
@@ -829,6 +834,7 @@
       $('apiStatus').textContent = '请先填写 API URL。';
       return;
     }
+    setApiBusy(true);
     try {
       $('apiStatus').textContent = '正在请求 API...';
       const request = buildApiGenerationRequest(config, foods);
@@ -846,6 +852,8 @@
       $('apiStatus').textContent = `已生成 ${generated.length} 个食物，使用预设：${request.preset.name}`;
     } catch (error) {
       $('apiStatus').textContent = `生成失败：${error.message}`;
+    } finally {
+      setApiBusy(false);
     }
   }
   function initBackground() {
@@ -886,8 +894,10 @@
     $('volumeSlider').addEventListener('input', (event) => {
       bgm.volume = Number(event.target.value) / 100;
     });
-    $('adminBtn').addEventListener('click', () => $('adminPanel').classList.add('open'));
-    $('closeAdminBtn').addEventListener('click', () => $('adminPanel').classList.remove('open'));
+    document.addEventListener('click', (event) => {
+      if (event.target.closest('#adminBtn')) $('adminPanel').classList.add('open');
+      if (event.target.closest('#closeAdminBtn')) $('adminPanel').classList.remove('open');
+    });
     $('foodForm').addEventListener('submit', (event) => {
       event.preventDefault();
       foods = createFood(foods, {
