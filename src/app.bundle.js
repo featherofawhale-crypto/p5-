@@ -653,6 +653,7 @@
   function drawReels(items) {
     items.forEach((food, i) => {
       $(`r${i}`).innerHTML = foodHTML(food);
+      $(`r${i}`).closest('.reel').dataset.rarity = food.rarity;
     });
   }
   function drawResult(food, options = {}) {
@@ -724,12 +725,12 @@
     sfx.warning();
     await delay(1300);
     setPhase('FINAL JUDGEMENT');
+    clearInterval(inter);
     cut('execute', final);
     drawReels([pickFood(), final, pickFood()]);
     document.querySelectorAll('.reel').forEach((node) => node.classList.add('locked'));
     sfx.lock();
     await delay(380);
-    clearInterval(inter);
     sfx.revealCharge();
     await delay(520);
     cut('');
