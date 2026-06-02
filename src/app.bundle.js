@@ -522,6 +522,23 @@
   const bgm = $('bgm');
   bgm.volume = 0.18;
 
+  function setBgmTrack(index) {
+    bgmIndex = ((index % BGM.length) + BGM.length) % BGM.length;
+    bgm.src = BGM[bgmIndex].src;
+    $('bgmName').textContent = BGM[bgmIndex].name;
+  }
+
+  function randomizeInitialBgm() {
+    if (BGM.length <= 1) {
+      setBgmTrack(0);
+      return;
+    }
+    setBgmTrack(Math.floor(Math.random() * BGM.length));
+    bgm.load();
+  }
+
+  randomizeInitialBgm();
+
   function userBgmVolume() {
     return Math.max(0, Math.min(1, Number($('volumeSlider').value || 18) / 100));
   }
@@ -548,9 +565,7 @@
     if (cue) sfx.click();
     const shouldPlay = play && !muted;
     fadeBgm(0.02, 260, () => {
-      bgmIndex = (bgmIndex + 1) % BGM.length;
-      bgm.src = BGM[bgmIndex].src;
-      $('bgmName').textContent = BGM[bgmIndex].name;
+      setBgmTrack(bgmIndex + 1);
       bgm.load();
       if (shouldPlay) bgm.play().catch(() => {});
       fadeBgm(shouldPlay ? userBgmVolume() : 0, 420);
