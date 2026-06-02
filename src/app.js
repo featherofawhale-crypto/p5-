@@ -329,17 +329,26 @@ function drawReels(items) {
   });
 }
 
+function sealedFood(food) {
+  return { ...food, name: '???' };
+}
+
 function drawResult(food, options = {}) {
   const label = food.rarity === 'SSR' ? 'EXECUTION SSR' : food.rarity === 'SR' ? 'SUPER RARE' : food.rarity === 'R' ? 'RARE' : 'NORMAL';
   const nameSize = foodNameSize(food.name);
   const animate = options.animate !== false;
+  const concealed = Boolean(options.concealed);
+  const displayLabel = concealed ? 'CLASSIFIED' : label;
+  const displayName = concealed ? '???' : food.name;
+  const displayIcon = concealed ? '<div class="sealedMark">?</div>' : foodArt(food, 132);
   $('result').classList.remove('reveal');
+  $('result').classList.toggle('concealed', concealed);
   $('result').dataset.rarity = food.rarity;
   $('result').innerHTML = `<div class="resultBody">
     <div class="resultFx"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <div class="resultHead"><div class="rarityBig">${label}</div><div class="raritySignal">${food.rarity}</div></div>
+    <div class="resultHead"><div class="rarityBig">${displayLabel}</div><div class="raritySignal">${concealed ? '??' : food.rarity}</div></div>
     <div class="resultStage">
-      <div class="drawCard winnerCard" data-rarity="${food.rarity}" data-name-size="${nameSize}"><div class="cardTop">${label}</div><div class="winnerIcon" data-food-icon="${food.name}">${foodArt(food, 132)}</div><div class="resultCopy"><div class="destiny">TODAY'S DESTINY</div><div class="resultName">${food.name}</div></div></div>
+      <div class="drawCard winnerCard" data-rarity="${food.rarity}" data-name-size="${concealed ? 'short' : nameSize}"><div class="cardTop">${displayLabel}</div><div class="winnerIcon" data-food-icon="${concealed ? 'sealed' : food.name}">${displayIcon}</div><div class="resultCopy"><div class="destiny">${concealed ? 'SEALED DESTINY' : "TODAY'S DESTINY"}</div><div class="resultName">${displayName}</div></div></div>
     </div>
     <div class="stats"><div class="stat"><small>KCAL</small><b>${food.calories}</b></div><div class="stat"><small>HEALTH</small><b>${food.health}</b></div><div class="stat"><small>控糖</small><b>${food.sugarSafe ? 'OK' : 'NO'}</b></div></div>
   </div>`;
@@ -358,9 +367,14 @@ function cut(type, food) {
     return;
   }
   if (type === 'slash') cutin.innerHTML = '<div class="cutSlashA"></div><div class="cutSlashB"></div>';
-  if (type === 'manga') cutin.innerHTML = '<div class="manga">' + ['TARGET', 'MENU', 'CALORIE', 'DESTINY'].map((x, i) => `<div class="panel" style="animation-delay:${i * 0.1}s">${x}</div>`).join('') + '</div>';
+  if (type === 'manga') {
+    cutin.innerHTML = '<div class="manga">' + ['TARGET', 'MENU', 'CALORIE', 'DESTINY'].map((x, i) => {
+      const shadow = pickFood();
+      return `<div class="panel" style="animation-delay:${i * 0.1}s"><div class="panelFood">${foodArt(shadow, 150)}</div><span>${x}</span></div>`;
+    }).join('') + '</div>';
+  }
   if (type === 'warning') cutin.innerHTML = '<div class="black"></div><div class="redFlash"></div><div class="warningBox"><div class="warningText">WARNING</div><div class="warningSub">RARE DESTINY DETECTED</div></div>';
-  if (type === 'execute') cutin.innerHTML = `<div class="execute"><span>EXECUTE</span><b>${food.name}</b></div>`;
+  if (type === 'execute') cutin.innerHTML = '<div class="execute"><span>EXECUTE</span><b>SEALED DESTINY</b></div>';
 }
 
 async function startRoll() {
@@ -404,8 +418,8 @@ async function startRoll() {
   await delay(1300);
   setPhase('FINAL JUDGEMENT');
   clearInterval(inter);
-  drawReels([pickFood(), final, pickFood()]);
-  drawResult(final, { animate: false });
+  drawReels([pickFood(), sealedFood(final), pickFood()]);
+  drawResult(final, { animate: false, concealed: true });
   cut('execute', final);
   document.querySelectorAll('.reel').forEach((node) => node.classList.add('locked'));
   sfx.lock();
@@ -415,6 +429,7 @@ async function startRoll() {
   cut('');
   $('flash').classList.remove('go');
   $('flash').classList.add('burst');
+  drawReels([pickFood(), final, pickFood()]);
   drawResult(final);
   pinViewport();
   recordDraw(final);
