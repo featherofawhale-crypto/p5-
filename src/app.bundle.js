@@ -180,6 +180,18 @@
       sugarSafe: input?.sugarSafe === true || input?.sugarSafe === 'true' || input?.sugarSafe === 'on',
     };
   }
+  function sanitizeFoodPool(items, fallback = buildFoods()) {
+    const source = Array.isArray(items) ? items : [];
+    const seen = new Set();
+    const foods = [];
+    source.forEach((item) => {
+      const food = normalizeFood(item, foods.length + 1);
+      if (!food.name || seen.has(food.name)) return;
+      seen.add(food.name);
+      foods.push({ ...food, id: foods.length + 1 });
+    });
+    return foods.length ? foods : fallback;
+  }
   function classifyFood(name) {
     if (/面|粉|河粉|米线|拉面|担担|热干|刀削/.test(name)) return 'noodle';
     if (/饭|炒饭|便当|盖饭|煲仔|寿司|丼|粥/.test(name)) return 'rice';
@@ -281,7 +293,7 @@
   }
   function createFood(foods, input) {
     const nextId = foods.reduce((max, food) => Math.max(max, food.id), 0) + 1;
-    return [...foods, normalizeFood({ ...input, id: nextId }, nextId)];
+    return sanitizeFoodPool([...foods, normalizeFood({ ...input, id: nextId }, nextId)]);
   }
   function deleteFood(foods, id) {
     if (foods.length <= 1) return foods;
@@ -378,8 +390,7 @@
   function parseFoods(json) {
     const parsed = JSON.parse(json);
     if (!Array.isArray(parsed)) throw new Error('菜单 JSON 必须是数组');
-    const foods = parsed.map((food, index) => normalizeFood(food, index + 1));
-    return foods.length ? foods : buildFoods();
+    return sanitizeFoodPool(parsed);
   }
 
   let foods = loadFoods();
@@ -397,11 +408,10 @@
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (!saved) return buildFoods();
-      const parsed = parseFoods(saved);
+      const parsed = sanitizeFoodPool(parseFoods(saved));
       const expanded = buildFoods();
-      if (parsed.length >= expanded.length) return parsed;
       const existing = new Set(parsed.map((food) => food.name));
-      const merged = [...parsed, ...expanded.filter((food) => !existing.has(food.name)).map((food, index) => ({ ...food, id: parsed.length + index + 1 }))];
+      const merged = sanitizeFoodPool([...parsed, ...expanded.filter((food) => !existing.has(food.name))]);
       localStorage.setItem(STORAGE_KEY, serializeFoods(merged));
       return merged;
     } catch {

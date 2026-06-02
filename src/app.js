@@ -10,6 +10,7 @@ import {
   parseFoods,
   randomFood,
   serializeFoods,
+  sanitizeFoodPool,
 } from './core.js';
 
 const STORAGE_KEY = 'dinner-slot-foods-v2';
@@ -52,11 +53,10 @@ function loadFoods() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return buildFoods();
-    const parsed = parseFoods(saved);
+    const parsed = sanitizeFoodPool(parseFoods(saved));
     const expanded = buildFoods();
-    if (parsed.length >= expanded.length) return parsed;
     const existing = new Set(parsed.map((food) => food.name));
-    const merged = [...parsed, ...expanded.filter((food) => !existing.has(food.name)).map((food, index) => ({ ...food, id: parsed.length + index + 1 }))];
+    const merged = sanitizeFoodPool([...parsed, ...expanded.filter((food) => !existing.has(food.name))]);
     localStorage.setItem(STORAGE_KEY, serializeFoods(merged));
     return merged;
   } catch {

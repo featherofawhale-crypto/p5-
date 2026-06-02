@@ -15,6 +15,7 @@ import {
   foodIconPath,
   getSoundCuePlan,
   normalizeFood,
+  sanitizeFoodPool,
 } from '../src/core.js';
 
 test('buildFoods creates the expanded default dinner pool with stable ids', () => {
@@ -61,8 +62,20 @@ test('createFood appends a normalized admin item with next id', () => {
   const next = createFood(foods, { name: '控糖蒸鱼套餐', rarity: 'SR', calories: 360, health: 88, sugarSafe: true });
 
   assert.equal(next.length, 2);
-  assert.equal(next[1].id, 5);
+  assert.equal(next[1].id, 2);
   assert.equal(next[1].name, '控糖蒸鱼');
+});
+
+test('sanitizeFoodPool dedupes cleaned names and resequences ids', () => {
+  const foods = sanitizeFoodPool([
+    { id: 20, name: 'SSR深夜火锅', rarity: 'SR', calories: 700, health: 45, sugarSafe: false },
+    { id: 21, name: '深夜火锅', rarity: 'N', calories: 520, health: 60, sugarSafe: false },
+    { id: 22, name: '低多边形牛肉面', rarity: 'R', calories: 620, health: 52, sugarSafe: false },
+  ]);
+
+  assert.deepEqual(foods.map((food) => food.name), ['深夜火锅', '牛肉面']);
+  assert.deepEqual(foods.map((food) => food.id), [1, 2]);
+  assert.equal(foods[0].rarity, 'SR');
 });
 
 test('deleteFood keeps at least one option in the pool', () => {

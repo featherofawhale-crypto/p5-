@@ -298,6 +298,19 @@ export function normalizeFood(input, fallbackId = 1) {
   };
 }
 
+export function sanitizeFoodPool(items, fallback = buildFoods()) {
+  const source = Array.isArray(items) ? items : [];
+  const seen = new Set();
+  const foods = [];
+  source.forEach((item) => {
+    const food = normalizeFood(item, foods.length + 1);
+    if (!food.name || seen.has(food.name)) return;
+    seen.add(food.name);
+    foods.push({ ...food, id: foods.length + 1 });
+  });
+  return foods.length ? foods : fallback;
+}
+
 export function buildFoods(names = FOOD_POOL_NAMES) {
   return names.map((name, index) => {
     const healthy = HEALTH_PATTERN.test(name);
@@ -314,7 +327,7 @@ export function buildFoods(names = FOOD_POOL_NAMES) {
 
 export function createFood(foods, input) {
   const nextId = foods.reduce((max, food) => Math.max(max, food.id), 0) + 1;
-  return [...foods, normalizeFood({ ...input, id: nextId }, nextId)];
+  return sanitizeFoodPool([...foods, normalizeFood({ ...input, id: nextId }, nextId)]);
 }
 
 export function updateFood(foods, id, input) {
@@ -418,6 +431,5 @@ export function serializeFoods(foods) {
 export function parseFoods(json) {
   const parsed = JSON.parse(json);
   if (!Array.isArray(parsed)) throw new Error('菜单 JSON 必须是数组');
-  const foods = parsed.map((food, index) => normalizeFood(food, index + 1));
-  return foods.length ? foods : buildFoods();
+  return sanitizeFoodPool(parsed);
 }
