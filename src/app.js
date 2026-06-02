@@ -49,6 +49,15 @@ const sampleCache = new Map();
 const bgm = $('bgm');
 bgm.volume = 0.18;
 
+function switchBgm({ play = true, cue = true } = {}) {
+  if (BGM.length <= 1) return;
+  if (cue) sfx.click();
+  bgmIndex = (bgmIndex + 1) % BGM.length;
+  bgm.src = BGM[bgmIndex].src;
+  $('bgmName').textContent = BGM[bgmIndex].name;
+  if (play && !muted) bgm.play().catch(() => {});
+}
+
 function loadFoods() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -399,13 +408,8 @@ function wireEvents() {
     $('muteBtn').textContent = muted ? '🔇' : '🔊';
     if (!muted) sfx.click();
   });
-  $('bgmBtn').addEventListener('click', () => {
-    sfx.click();
-    bgmIndex = (bgmIndex + 1) % BGM.length;
-    bgm.src = BGM[bgmIndex].src;
-    $('bgmName').textContent = BGM[bgmIndex].name;
-    bgm.play().catch(() => {});
-  });
+  $('bgmBtn').addEventListener('click', () => switchBgm());
+  bgm.addEventListener('ended', () => switchBgm({ cue: false }));
   $('volumeSlider').addEventListener('input', (event) => {
     bgm.volume = Number(event.target.value) / 100;
   });
