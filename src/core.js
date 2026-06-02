@@ -156,10 +156,17 @@ const DEFAULT_API_BODY_TEMPLATE = JSON.stringify({
 }, null, 2);
 
 export function classifyFood(name) {
+  if (/披萨/.test(name)) return 'pizza';
+  if (/汉堡/.test(name)) return 'burger';
+  if (/咖喱/.test(name)) return 'curry';
+  if (/寿司|刺身|鳗鱼寿司/.test(name)) return 'sushi';
+  if (/卷饼|春卷|披塔|三明治/.test(name)) return 'wrap';
+  if (/虾|龙虾/.test(name)) return 'shrimp';
+  if (/面包|吐司|烧饼|馍/.test(name)) return 'bread';
   if (/面|粉|河粉|米线|拉面|担担|热干|刀削/.test(name)) return 'noodle';
-  if (/饭|炒饭|便当|盖饭|煲仔|寿司|丼|粥/.test(name)) return 'rice';
+  if (/饭|炒饭|便当|盖饭|煲仔|丼|粥/.test(name)) return 'rice';
   if (/饺|包|烧麦|锅贴|馄饨|肠粉|肉夹馍|煎饼/.test(name)) return 'dumpling';
-  if (/鱼|虾|蟹|海鲜|刺身|鳗|龙虾/.test(name)) return 'fish';
+  if (/鱼|蟹|海鲜|鳗/.test(name)) return 'fish';
   if (/火锅|冒菜|麻辣烫|锅|汤/.test(name)) return 'hotpot';
   if (/串|烤|烧烤|羊肉|牛排|鸡翅|鸡腿/.test(name)) return 'skewer';
   if (/豆腐|豆皮|豆干/.test(name)) return 'tofu';
@@ -168,7 +175,7 @@ export function classifyFood(name) {
   if (/面|粉|米线|河粉|拉面|热干|担担|云吞/.test(name)) return 'noodle';
   if (/饭|粥|煲仔|卤肉|炒饭|便当|碗/.test(name)) return 'rice';
   if (/饺|包|烧麦|锅贴|肠粉|肉夹馍|饼/.test(name)) return 'dumpling';
-  if (/鱼|鲈|三文|海鲜|虾|蟹|龙虾|刺身|鳗/.test(name)) return 'fish';
+  if (/鱼|鲈|三文|海鲜|蟹|鳗/.test(name)) return 'fish';
   if (/火锅|汤|锅|麻辣烫|冒菜|羹|佛跳墙/.test(name)) return 'hotpot';
   if (/烧烤|烤|串|羊肉|牛排|和牛|鸡腿|鸡翅/.test(name)) return 'skewer';
   if (/豆腐|豆皮|豆干/.test(name)) return 'tofu';
@@ -258,6 +265,13 @@ export function foodIconPath(kind) {
     meat: 'assets/food/openmoji/1F969.svg',
     tofu: 'assets/food/openmoji/1F9C8.svg',
     salad: 'assets/food/openmoji/1F957.svg',
+    pizza: 'assets/food/openmoji/1F355.svg',
+    burger: 'assets/food/openmoji/1F354.svg',
+    curry: 'assets/food/openmoji/1F35B.svg',
+    sushi: 'assets/food/openmoji/1F363.svg',
+    wrap: 'assets/food/openmoji/1F32F.svg',
+    shrimp: 'assets/food/openmoji/1F364.svg',
+    bread: 'assets/food/openmoji/1F35E.svg',
     plate: 'assets/food/openmoji/1F37D.svg',
   };
   return icons[kind] || icons.plate;

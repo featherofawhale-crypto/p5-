@@ -165,6 +165,9 @@ test('foodArt uses recognizable food-specific silhouettes', () => {
 test('foodIconPath maps food kinds to local OpenMoji SVG assets', () => {
   assert.equal(foodIconPath('noodle'), 'assets/food/openmoji/1F35C.svg');
   assert.equal(foodIconPath('rice'), 'assets/food/openmoji/1F35A.svg');
+  assert.equal(foodIconPath('pizza'), 'assets/food/openmoji/1F355.svg');
+  assert.equal(foodIconPath('sushi'), 'assets/food/openmoji/1F363.svg');
+  assert.equal(foodIconPath('shrimp'), 'assets/food/openmoji/1F364.svg');
   assert.equal(foodIconPath('plate'), 'assets/food/openmoji/1F37D.svg');
 });
 
@@ -175,6 +178,11 @@ test('classifyFood maps readable Chinese names to matching visual categories', (
   assert.equal(classifyFood('清蒸鲈鱼'), 'fish');
   assert.equal(classifyFood('红烧肉'), 'meat');
   assert.equal(classifyFood('虎皮青椒'), 'salad');
+  assert.equal(classifyFood('玛格丽特披萨'), 'pizza');
+  assert.equal(classifyFood('日式咖喱饭'), 'curry');
+  assert.equal(classifyFood('寿司拼盘'), 'sushi');
+  assert.equal(classifyFood('墨西哥卷饼'), 'wrap');
+  assert.equal(classifyFood('油焖大虾'), 'shrimp');
 });
 
 test('foodArt uses attributed local image assets for food art', () => {
