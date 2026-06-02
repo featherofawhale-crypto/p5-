@@ -51,7 +51,14 @@ bgm.volume = 0.18;
 function loadFoods() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? parseFoods(saved) : buildFoods();
+    if (!saved) return buildFoods();
+    const parsed = parseFoods(saved);
+    const expanded = buildFoods();
+    if (parsed.length >= expanded.length) return parsed;
+    const existing = new Set(parsed.map((food) => food.name));
+    const merged = [...parsed, ...expanded.filter((food) => !existing.has(food.name)).map((food, index) => ({ ...food, id: parsed.length + index + 1 }))];
+    localStorage.setItem(STORAGE_KEY, serializeFoods(merged));
+    return merged;
   } catch {
     return buildFoods();
   }
@@ -186,10 +193,12 @@ const sfx = {
   tick(i) { playLayeredCue('tick', 0.8, { pitchOffset: i }); },
   whoosh() { playLayeredCue('whoosh', 1.1); },
   warning() { playLayeredCue('warning', 1.15); },
+  suspense() { playLayeredCue('suspense', 1.1, { preroll: true }); },
   slash() { playLayeredCue('slash', 1); },
   lock() { playLayeredCue('lock', 1.1); },
   revealCharge() { playLayeredCue('reveal', 1.15, { preroll: true }); },
   shine() { playLayeredCue('shine', 1); },
+  jackpot() { playLayeredCue('jackpot', 1.15); },
 };
 
 function foodHTML(food) {
@@ -206,6 +215,7 @@ function drawResult(food) {
   const label = food.rarity === 'SSR' ? 'EXECUTION SSR' : food.rarity === 'SR' ? 'SUPER RARE' : food.rarity === 'R' ? 'RARE' : 'NORMAL';
   $('result').classList.remove('reveal');
   $('result').innerHTML = `<div class="resultBody">
+    <div class="resultFx"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="resultHead"><div class="rarityBig">${label}</div><div style="color:#e60012;font-size:28px">⌖</div></div>
     <div class="mainFood"><div class="foodArt">${foodArt(food, 132)}</div><div><div class="destiny">TODAY'S DESTINY</div><div class="resultName">${food.name}</div></div></div>
     <div class="stats"><div class="stat"><small>KCAL</small><b>${food.calories}</b></div><div class="stat"><small>HEALTH</small><b>${food.health}</b></div><div class="stat"><small>控糖</small><b>${food.sugarSafe ? 'OK' : 'NO'}</b></div></div>
@@ -264,6 +274,7 @@ async function startRoll() {
   setPhase('LOCKING DESTINY');
   cut('warning');
   $('machine').classList.add('finalCharge');
+  sfx.suspense();
   sfx.warning();
   await delay(1300);
   setPhase('FINAL JUDGEMENT');
@@ -279,6 +290,7 @@ async function startRoll() {
   $('flash').classList.add('burst');
   drawResult(final);
   setPhase("TODAY'S DESTINY");
+  sfx.jackpot();
   await delay(620);
   cut('');
   sfx.shine();

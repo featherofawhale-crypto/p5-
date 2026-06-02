@@ -19,6 +19,25 @@ export const DEFAULT_FOOD_NAMES = [
   '传说级烧烤', '命运之麻辣香锅',
 ];
 
+export const EXTRA_FOOD_NAMES = [
+  '脆皮烤鸭', '蒜香排骨', '椒麻鸡', '葱爆牛肉', '黑椒牛柳', '番茄牛腩', '剁椒鱼头', '糖醋鲤鱼',
+  '酸汤肥牛', '毛血旺', '水煮鱼片', '干锅花菜', '干锅牛蛙', '香辣蟹', '油焖大虾', '蒜蓉粉丝扇贝',
+  '蚝油生菜', '虎皮青椒', '鱼香肉丝', '宫保鸡丁', '回锅肉', '京酱肉丝', '小炒肉', '辣椒炒肉',
+  '照烧鸡排饭', '鳗鱼饭', '牛肉盖浇饭', '日式咖喱饭', '肥牛丼', '亲子丼', '叉烧拉面', '豚骨拉面',
+  '海鲜乌冬', '牛肉河粉', '螺蛳粉', '桂林米粉', '过桥米线', '重庆酸辣粉', '羊肉泡馍', '肉夹馍套餐',
+  '虾仁云吞面', '鲜肉小笼包', '蟹黄汤包', '生煎包', '韭菜盒子', '锅贴拼盘', '三鲜水饺', '红油抄手',
+  '广式肠粉', '牛肉烧麦', '煎饼果子', '鸡蛋灌饼', '麻辣香锅', '番茄火锅', '菌汤火锅', '椰子鸡火锅',
+  '潮汕牛肉火锅', '韩式部队锅', '冬阴功海鲜锅', '砂锅鱼头', '砂锅排骨', '砂锅鸡煲', '铁板鱿鱼',
+  '铁板豆腐', '烤羊肉串', '烤五花肉', '烤鸡翅', '炭烤牛排', '芝士焗饭', '芝士年糕', '韩式拌饭',
+  '越南春卷', '越南牛肉粉', '泰式绿咖喱', '泰式打抛猪', '海南椰奶鸡饭', '新加坡叻沙', '马来炒粿条',
+  '印度黄油鸡', '咖喱牛腩', '墨西哥卷饼', '意式肉酱面', '奶油蘑菇意面', '玛格丽特披萨', '海鲜披萨',
+  '凯撒沙拉', '金枪鱼沙拉', '鸡胸藜麦碗', '牛油果虾仁沙拉', '照烧三文鱼', '香煎鳕鱼', '清炒时蔬',
+  '蒜蓉西兰花', '番茄炒蛋', '紫菜蛋花汤', '玉米排骨汤', '老鸭粉丝汤', '皮蛋瘦肉粥', '南瓜小米粥',
+  '红豆双皮奶', '杨枝甘露', '芋圆仙草', '炸鸡汉堡', '芝士牛肉堡', '鳗鱼寿司卷', '三文鱼刺身', '寿喜烧',
+];
+
+export const FOOD_POOL_NAMES = [...DEFAULT_FOOD_NAMES, ...EXTRA_FOOD_NAMES];
+
 const RARITIES = new Set(['N', 'R', 'SR', 'SSR']);
 const HEALTH_PATTERN = /控糖|鸡胸|藜麦|糙米|沙拉|西兰花|蒸|低脂|杂粮|无糖|牛油果|豆腐|鱼|虾仁|蔬菜|时蔬/;
 const COLOR_SETS = [
@@ -78,6 +97,12 @@ export const SOUND_CUE_RECIPES = {
     { at: 150, role: 'sparkle', band: 'high', source: 'tone', freq: 980, dur: 0.11, wave: 'square', gain: 0.026 },
     { at: 430, role: 'sparkle', band: 'high', source: 'tone', freq: 740, dur: 0.09, wave: 'square', gain: 0.018 },
   ],
+  suspense: [
+    { at: -360, role: 'riser', band: 'low', source: 'tone', freq: 72, dur: 0.46, wave: 'sawtooth', gain: 0.05, slide: 38 },
+    { at: -240, role: 'riser', band: 'mid', source: 'noise', dur: 0.54, gain: 0.038, filter: 420, filterType: 'bandpass' },
+    { at: 0, role: 'impact', band: 'low', source: 'tone', freq: 96, dur: 0.12, wave: 'triangle', gain: 0.038 },
+    { at: 150, role: 'tail', band: 'mid', source: 'tone', freq: 144, dur: 0.18, wave: 'sine', gain: 0.026 },
+  ],
   lock: [
     { at: -40, role: 'riser', band: 'mid', source: 'noise', dur: 0.12, gain: 0.035 },
     { at: 0, role: 'impact', band: 'low', source: 'tone', freq: 118, dur: 0.08, wave: 'square', gain: 0.056 },
@@ -101,6 +126,14 @@ export const SOUND_CUE_RECIPES = {
     { at: 70, role: 'sparkle', band: 'high', source: 'tone', freq: 1900, dur: 0.08, wave: 'sine', gain: 0.022 },
     { at: 140, role: 'sparkle', band: 'high', source: 'tone', freq: 2400, dur: 0.08, wave: 'sine', gain: 0.02 },
     { at: 220, role: 'tail', band: 'mid', source: 'tone', freq: 1100, dur: 0.18, wave: 'triangle', gain: 0.014 },
+  ],
+  jackpot: [
+    { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.34, rate: 1.18 },
+    { at: 20, role: 'sparkle', band: 'high', source: 'tone', freq: 1046, dur: 0.13, wave: 'triangle', gain: 0.046 },
+    { at: 130, role: 'sparkle', band: 'high', source: 'tone', freq: 1318, dur: 0.13, wave: 'triangle', gain: 0.044 },
+    { at: 240, role: 'sparkle', band: 'high', source: 'tone', freq: 1568, dur: 0.16, wave: 'triangle', gain: 0.05 },
+    { at: 390, role: 'sparkle', band: 'high', source: 'tone', freq: 2093, dur: 0.2, wave: 'sine', gain: 0.04 },
+    { at: 590, role: 'tail', band: 'mid', source: 'tone', freq: 784, dur: 0.34, wave: 'sine', gain: 0.024, slide: -120 },
   ],
 };
 
@@ -129,7 +162,7 @@ export function classifyFood(name) {
   if (/串|烤|烧烤|羊肉|牛排|鸡翅|鸡腿/.test(name)) return 'skewer';
   if (/豆腐|豆皮|豆干/.test(name)) return 'tofu';
   if (/肉|鸡|牛|羊|猪|排骨|叉烧|里脊|扣肉|黄焖/.test(name)) return 'meat';
-  if (/沙拉|西兰花|牛油果|时蔬|蔬菜/.test(name)) return 'salad';
+  if (/沙拉|西兰花|牛油果|时蔬|蔬菜|青椒|生菜|花菜|青菜/.test(name)) return 'salad';
   if (/面|粉|米线|河粉|拉面|热干|担担|云吞/.test(name)) return 'noodle';
   if (/饭|粥|煲仔|卤肉|炒饭|便当|碗/.test(name)) return 'rice';
   if (/饺|包|烧麦|锅贴|肠粉|肉夹馍|饼/.test(name)) return 'dumpling';
@@ -212,17 +245,18 @@ function foodShape(kind, colors) {
 }
 
 export function foodIconPath(kind) {
+  // OpenMoji food assets live in assets/food/openmoji/ATTRIBUTION.txt.
   const icons = {
-    noodle: 'assets/food/twemoji/1f35c.svg',
-    rice: 'assets/food/twemoji/1f35a.svg',
-    dumpling: 'assets/food/twemoji/1f95f.svg',
-    fish: 'assets/food/twemoji/1f41f.svg',
-    hotpot: 'assets/food/twemoji/1f372.svg',
-    skewer: 'assets/food/twemoji/1f362.svg',
-    meat: 'assets/food/twemoji/1f969.svg',
-    tofu: 'assets/food/twemoji/1f9c8.svg',
-    salad: 'assets/food/twemoji/1f957.svg',
-    plate: 'assets/food/twemoji/1f37d.svg',
+    noodle: 'assets/food/openmoji/1F35C.svg',
+    rice: 'assets/food/openmoji/1F35A.svg',
+    dumpling: 'assets/food/openmoji/1F95F.svg',
+    fish: 'assets/food/openmoji/1F41F.svg',
+    hotpot: 'assets/food/openmoji/1F372.svg',
+    skewer: 'assets/food/openmoji/1F362.svg',
+    meat: 'assets/food/openmoji/1F969.svg',
+    tofu: 'assets/food/openmoji/1F9C8.svg',
+    salad: 'assets/food/openmoji/1F957.svg',
+    plate: 'assets/food/openmoji/1F37D.svg',
   };
   return icons[kind] || icons.plate;
 }
@@ -234,7 +268,7 @@ function clamp(value, min, max) {
 }
 
 export function pickRarity(name, index = 0) {
-  if (index >= DEFAULT_FOOD_NAMES.length - 10 || /^SSR/.test(name)) return 'SSR';
+  if (index >= FOOD_POOL_NAMES.length - 10 || /^SSR/.test(name)) return 'SSR';
   const score = (name.length * 17 + index * 31) % 100;
   if (score > 93) return 'SSR';
   if (score > 78) return 'SR';
@@ -255,7 +289,7 @@ export function normalizeFood(input, fallbackId = 1) {
   };
 }
 
-export function buildFoods(names = DEFAULT_FOOD_NAMES) {
+export function buildFoods(names = FOOD_POOL_NAMES) {
   return names.map((name, index) => {
     const healthy = HEALTH_PATTERN.test(name);
     return normalizeFood({
@@ -353,7 +387,9 @@ export function foodArt(food, size = 160) {
       <rect x="8" y="10" width="140" height="136" rx="8" fill="#fff" stroke="#111" stroke-width="6"/>
       <polygon points="16,20 148,12 132,45 38,40" fill="${colors[0]}" stroke="#111" stroke-width="4" opacity=".88"/>
       <rect x="25" y="36" width="110" height="96" rx="10" fill="${plate}" stroke="#111" stroke-width="5"/>
-      <g filter="url(#ink${food.id})">${foodShape(kind, colors)}</g>
+      <g filter="url(#ink${food.id})">
+        <image href="${foodIconPath(kind)}" x="36" y="42" width="88" height="88" preserveAspectRatio="xMidYMid meet"/>
+      </g>
       <circle cx="118" cy="42" r="13" fill="${rareStroke}" stroke="#111" stroke-width="4"/>
       <text x="80" y="140" text-anchor="middle" font-size="12" font-weight="900" fill="#111">${kind.toUpperCase()}</text>
     </svg>`;

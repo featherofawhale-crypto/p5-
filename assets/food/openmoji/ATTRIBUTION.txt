@@ -1,0 +1,8 @@
+OpenMoji food SVG assets
+
+Source: https://github.com/hfg-gmuend/openmoji
+Project: OpenMoji
+License: CC BY-SA 4.0
+
+These SVG files are used as local food illustration assets in the app.
+Attribution is kept here in the codebase and is not shown on the main screen.
