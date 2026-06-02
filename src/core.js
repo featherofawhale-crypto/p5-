@@ -151,7 +151,7 @@ export function getSoundCuePlan(name, intensity = 1) {
 }
 
 const DEFAULT_API_BODY_TEMPLATE = JSON.stringify({
-  prompt: '{style}\nGenerate {count} Chinese dinner options. Return JSON only with an array named foods. Each item must have name, rarity(N/R/SR/SSR), calories, health, sugarSafe.',
+  prompt: '{style}\nGenerate {count} Chinese food options. Return JSON only with an array named foods. Each item must have name, rarity(N/R/SR/SSR), calories, health, sugarSafe.',
   currentFoods: '{foodsJson}',
 }, null, 2);
 

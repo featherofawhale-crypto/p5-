@@ -22,7 +22,7 @@ import {
   sanitizeFoodPool,
 } from '../src/core.js';
 
-test('buildFoods creates the expanded default dinner pool with stable ids', () => {
+test('buildFoods creates the expanded default food pool with stable ids', () => {
   const foods = buildFoods();
 
   assert.equal(foods.length, FOOD_POOL_NAMES.length);
@@ -215,7 +215,7 @@ test('buildApiGenerationRequest applies built-in style preset and templates requ
     apiKey: 'sk-test',
     stylePresetId: 'low-poly-comic',
     count: 4,
-    headersJson: '{"X-App":"dinner"}',
+    headersJson: '{"X-App":"food"}',
     bodyTemplate: '{"prompt":"{style} generate {count} foods from {foodsJson}"}',
   }, foods);
 
@@ -223,9 +223,17 @@ test('buildApiGenerationRequest applies built-in style preset and templates requ
   assert.equal(request.url, 'https://example.test/generate');
   assert.equal(request.options.method, 'POST');
   assert.equal(request.options.headers.Authorization, 'Bearer sk-test');
-  assert.equal(request.options.headers['X-App'], 'dinner');
+  assert.equal(request.options.headers['X-App'], 'food');
   assert.match(JSON.parse(request.options.body).prompt, /low-poly American comic/);
   assert.match(JSON.parse(request.options.body).prompt, /generate 4 foods/);
+});
+
+test('buildApiGenerationRequest default prompt asks for food options, not dinner', () => {
+  const request = buildApiGenerationRequest({ endpoint: 'https://example.test/generate', count: 3 }, buildFoods().slice(0, 1));
+  const body = JSON.parse(request.options.body);
+
+  assert.match(body.prompt, /Chinese food options/);
+  assert.doesNotMatch(body.prompt, /dinner/i);
 });
 
 test('extractFoodsFromApiResponse accepts custom response paths and normalizes foods', () => {

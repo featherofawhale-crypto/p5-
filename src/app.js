@@ -25,11 +25,12 @@ const DEFAULT_API_BODY = `{
   "model": "gpt-4o-mini",
   "messages": [
     {"role": "system", "content": "{schema}"},
-    {"role": "user", "content": "Style preset: {style}\\nGenerate {count} dinner blind-box foods. Current menu JSON: {foodsJson}"}
+    {"role": "user", "content": "Style preset: {style}\\nGenerate {count} food blind-box options. Current food pool JSON: {foodsJson}"}
   ],
   "temperature": 0.9,
   "response_format": {"type": "json_object"}
 }`;
+const OLD_API_BODY_RE = /Generate \{count\} dinner blind-box foods|Current menu JSON/;
 const BGM = [
   { name: 'Last Surprise', src: 'assets/last_surprise.m4a' },
   { name: 'Wake Up Get Up Get', src: 'assets/wake_up_get_up.m4a' },
@@ -150,10 +151,13 @@ function recordDraw(food) {
 }
 
 function loadApiConfig() {
+  const fallback = { bodyTemplate: DEFAULT_API_BODY, responsePath: 'foods', count: 8, method: 'POST', stylePresetId: API_STYLE_PRESETS[0].id };
   try {
-    return { bodyTemplate: DEFAULT_API_BODY, responsePath: 'foods', count: 8, method: 'POST', stylePresetId: API_STYLE_PRESETS[0].id, ...JSON.parse(localStorage.getItem(API_CONFIG_KEY) || '{}') };
+    const config = { ...fallback, ...JSON.parse(localStorage.getItem(API_CONFIG_KEY) || '{}') };
+    if (OLD_API_BODY_RE.test(config.bodyTemplate || '')) config.bodyTemplate = DEFAULT_API_BODY;
+    return config;
   } catch {
-    return { bodyTemplate: DEFAULT_API_BODY, responsePath: 'foods', count: 8, method: 'POST', stylePresetId: API_STYLE_PRESETS[0].id };
+    return fallback;
   }
 }
 
