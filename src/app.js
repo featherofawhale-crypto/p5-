@@ -41,6 +41,7 @@ const SFX_ASSETS = {
 };
 const $ = (id) => document.getElementById(id);
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+let cursorTimer;
 
 function pinViewport() {
   window.scrollTo(0, 0);
@@ -51,6 +52,18 @@ function pinViewport() {
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 pinViewport();
+
+function hideCursorSoon(ms = 1200) {
+  clearTimeout(cursorTimer);
+  cursorTimer = setTimeout(() => {
+    document.body.classList.add('cursorHidden');
+  }, ms);
+}
+
+function showCursorBriefly() {
+  document.body.classList.remove('cursorHidden');
+  hideCursorSoon();
+}
 
 let foods = loadFoods();
 let rarityWeights = loadRarityWeights();
@@ -313,6 +326,7 @@ function cut(type, food) {
 async function startRoll() {
   if (spinning) return;
   pinViewport();
+  document.body.classList.add('cursorHidden');
   audioCtx();
   bgm.play().catch(() => {});
   spinning = true;
@@ -374,6 +388,7 @@ async function startRoll() {
   $('rollBtn').disabled = false;
   $('rollBtn').textContent = '开始处决';
   requestAnimationFrame(pinViewport);
+  hideCursorSoon(900);
   spinning = false;
 }
 
@@ -485,6 +500,9 @@ function initBackground() {
 }
 
 function wireEvents() {
+  ['pointermove', 'mousedown', 'keydown', 'touchstart'].forEach((eventName) => {
+    window.addEventListener(eventName, showCursorBriefly, { passive: true });
+  });
   $('rollBtn').addEventListener('click', startRoll);
   $('muteBtn').addEventListener('click', () => {
     muted = !muted;
@@ -577,3 +595,4 @@ renderAdmin();
 renderHistory();
 drawReels([foods[20], foods[43], foods[8]]);
 drawResult(foods[0]);
+hideCursorSoon();

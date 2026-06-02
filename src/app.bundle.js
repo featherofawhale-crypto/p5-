@@ -150,6 +150,7 @@
   };
   const $ = (id) => document.getElementById(id);
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  let cursorTimer;
 
   function pinViewport() {
     window.scrollTo(0, 0);
@@ -160,6 +161,16 @@
 
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   pinViewport();
+  function hideCursorSoon(ms = 1200) {
+    clearTimeout(cursorTimer);
+    cursorTimer = setTimeout(() => {
+      document.body.classList.add('cursorHidden');
+    }, ms);
+  }
+  function showCursorBriefly() {
+    document.body.classList.remove('cursorHidden');
+    hideCursorSoon();
+  }
 
   function clamp(value, min, max) {
     const number = Number(value);
@@ -670,6 +681,7 @@
   async function startRoll() {
     if (spinning) return;
     pinViewport();
+    document.body.classList.add('cursorHidden');
     audioCtx();
     bgm.play().catch(() => {});
     spinning = true;
@@ -729,6 +741,7 @@
     $('rollBtn').disabled = false;
     $('rollBtn').textContent = '开始处决';
     requestAnimationFrame(pinViewport);
+    hideCursorSoon(900);
     spinning = false;
   }
   function renderAdmin() {
@@ -831,6 +844,9 @@
     }
   }
   function wireEvents() {
+    ['pointermove', 'mousedown', 'keydown', 'touchstart'].forEach((eventName) => {
+      window.addEventListener(eventName, showCursorBriefly, { passive: true });
+    });
     $('rollBtn').addEventListener('click', startRoll);
     $('muteBtn').addEventListener('click', () => {
       muted = !muted;
@@ -922,4 +938,5 @@
   renderHistory();
   drawReels([foods[20], foods[43], foods[8]]);
   drawResult(foods[0]);
+  hideCursorSoon();
 }());

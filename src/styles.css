@@ -3,6 +3,7 @@ html,body{margin:0;min-height:100%;overflow-x:hidden;overflow-y:auto;scrollbar-w
 html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0}
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer}
+body.cursorHidden #app,body.cursorHidden #app *{cursor:none!important}
 #app{position:relative;width:100vw;min-height:100dvh;overflow:visible;background:radial-gradient(circle at 22% 14%,rgba(255,255,255,.2),transparent 16%),radial-gradient(circle at 80% 12%,rgba(255,214,10,.24),transparent 19%),linear-gradient(135deg,#050505 0%,#101010 34%,#d90429 35%,#ef233c 48%,#111 49%,#000 100%)}
 .slash-white{position:absolute;left:-30vw;top:-20vh;width:28vw;height:150vh;background:rgba(255,255,255,.92);transform:rotate(18deg);animation:slashFloat 5s infinite}
 .ring{position:absolute;right:-95px;top:-95px;width:285px;height:285px;border-radius:50%;border:30px solid rgba(255,255,255,.82);animation:spin 13s linear infinite}
