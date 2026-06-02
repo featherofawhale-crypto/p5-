@@ -206,6 +206,14 @@ test('manual icon kind overrides automatic food classification', () => {
   assert.match(art, /assets\/food\/openmoji\/1F363\.svg/);
 });
 
+test('admin icon picker uses readable Chinese labels', () => {
+  const labels = FOOD_ICON_OPTIONS.map((item) => item.label);
+
+  assert.deepEqual(labels.slice(0, 4), ['自动识别', '面条 / 米粉', '米饭 / 盖饭', '饺子 / 包子']);
+  assert.equal(labels.some((label) => label === 'SUSHI'), false);
+  assert.equal(labels.some((label) => label.includes('寿司')), true);
+});
+
 test('getSoundCuePlan layers editorial sound roles across frequency bands', () => {
   const reveal = getSoundCuePlan('reveal');
   const roles = new Set(reveal.map((layer) => layer.role));
