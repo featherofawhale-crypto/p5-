@@ -830,7 +830,7 @@
     <div class="resultFx"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="resultHead"><div class="rarityBig">${displayLabel}</div><div class="raritySignal">${concealed ? '??' : food.rarity}</div></div>
     <div class="resultStage">
-      <div class="drawCard winnerCard" data-rarity="${food.rarity}" data-name-size="${concealed ? 'short' : nameSize}"><div class="cardTop">${displayLabel}</div><div class="winnerIcon" data-food-icon="${concealed ? 'sealed' : food.name}">${displayIcon}</div><div class="resultCopy"><div class="destiny">${concealed ? '答案锁定中' : '今日命运食物'}</div><div class="resultName">${displayName}</div></div></div>
+      <div class="drawCard winnerCard" data-rarity="${food.rarity}" data-name-size="${concealed ? 'short' : nameSize}"><div class="cardTop">${displayLabel}</div><div class="winnerIcon" data-food-icon="${concealed ? 'sealed' : food.name}">${displayIcon}</div><div class="resultCopy"><div class="destiny">${concealed ? 'LOCKED TARGET' : "TODAY'S TARGET"}</div><div class="resultName">${displayName}</div></div></div>
     </div>
       <div class="stats"><div class="stat"><small>KCAL</small><b>${food.calories}</b></div><div class="stat"><small>HEALTH</small><b>${food.health}</b></div><div class="stat"><small>控糖</small><b>${food.sugarSafe ? 'OK' : 'NO'}</b></div></div>
     </div>`;
