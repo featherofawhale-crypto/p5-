@@ -41,7 +41,15 @@ const SFX_ASSETS = {
   tick: 'assets/sfx/tick.wav',
   warning: 'assets/sfx/warning.wav',
   reveal: 'assets/sfx/reveal.wav',
+  suspenseRise: 'assets/sfx/suspense-rise.wav',
+  lockClack: 'assets/sfx/lock-clack.wav',
+  rewardPop: 'assets/sfx/reward-pop.wav',
+  magicHit: 'assets/sfx/magic-hit.wav',
+  shineChime: 'assets/sfx/shine-chime.wav',
+  jackpotFanfare: 'assets/sfx/jackpot-fanfare.wav',
 };
+const SFX_CREDITS = 'Additional game UI SFX: Kenney UI Audio via Calinou/kenney-ui-audio on GitHub, CC0 1.0.';
+window.__FOOD_HEIST_SFX_CREDITS__ = SFX_CREDITS;
 const $ = (id) => document.getElementById(id);
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 let cursorTimer;

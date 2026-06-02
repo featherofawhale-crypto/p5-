@@ -216,9 +216,19 @@ test('getSoundCuePlan layers editorial sound roles across frequency bands', () =
   assert.equal(bands.has('mid'), true);
   assert.equal(bands.has('high'), true);
   assert.equal(reveal.some((layer) => layer.source === 'voice'), true);
+  assert.equal(reveal.some((layer) => layer.sample === 'suspenseRise'), true);
+  assert.equal(reveal.some((layer) => layer.sample === 'rewardPop'), true);
   assert.equal(reveal.some((layer) => layer.at < 0), true);
   assert.equal(reveal.some((layer) => layer.at > 0), true);
   assert.equal(reveal.length >= 10, true);
+});
+
+test('jackpot sound cue includes imported game fanfare and vocal accent', () => {
+  const jackpot = getSoundCuePlan('jackpot');
+
+  assert.equal(jackpot.some((layer) => layer.sample === 'jackpotFanfare'), true);
+  assert.equal(jackpot.some((layer) => layer.sample === 'magicHit'), true);
+  assert.equal(jackpot.some((layer) => layer.source === 'voice'), true);
 });
 
 test('buildApiGenerationRequest applies built-in style preset and templates request body', () => {

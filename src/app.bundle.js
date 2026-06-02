@@ -87,43 +87,49 @@
       { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'tick', gain: 0.16 },
       { at: 8, role: 'sparkle', band: 'high', source: 'tone', freq: 520, dur: 0.035, wave: 'square', gain: 0.014, pitchStep: 14 },
   ],
-  whoosh: [
-    { at: -120, role: 'riser', band: 'mid', source: 'noise', dur: 0.48, gain: 0.058, filter: 760, filterType: 'bandpass' },
-    { at: -20, role: 'riser', band: 'low', source: 'tone', freq: 82, dur: 0.44, wave: 'sawtooth', gain: 0.034, slide: 1080 },
-    { at: 110, role: 'sparkle', band: 'high', source: 'tone', freq: 1520, dur: 0.08, wave: 'triangle', gain: 0.022, slide: 620 },
+    whoosh: [
+      { at: -145, role: 'riser', band: 'mid', source: 'sample', sample: 'suspenseRise', gain: 0.2, rate: 1.08 },
+      { at: -120, role: 'riser', band: 'mid', source: 'noise', dur: 0.48, gain: 0.058, filter: 760, filterType: 'bandpass' },
+      { at: -20, role: 'riser', band: 'low', source: 'tone', freq: 82, dur: 0.44, wave: 'sawtooth', gain: 0.034, slide: 1080 },
+      { at: 110, role: 'sparkle', band: 'high', source: 'tone', freq: 1520, dur: 0.08, wave: 'triangle', gain: 0.022, slide: 620 },
   ],
     slash: [
       { at: -45, role: 'riser', band: 'high', source: 'noise', dur: 0.16, gain: 0.072 },
       { at: 0, role: 'impact', band: 'mid', source: 'tone', freq: 1320, dur: 0.08, wave: 'sawtooth', gain: 0.034, slide: 680 },
       { at: 60, role: 'tail', band: 'high', source: 'tone', freq: 2400, dur: 0.08, wave: 'triangle', gain: 0.016 },
     ],
-  warning: [
-    { at: -220, role: 'riser', band: 'mid', source: 'tone', freq: 180, dur: 0.28, wave: 'sawtooth', gain: 0.022, slide: 520 },
-    { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'warning', gain: 0.34 },
+    warning: [
+      { at: -220, role: 'riser', band: 'mid', source: 'tone', freq: 180, dur: 0.28, wave: 'sawtooth', gain: 0.022, slide: 520 },
+      { at: -90, role: 'riser', band: 'mid', source: 'sample', sample: 'magicHit', gain: 0.18, rate: 0.72 },
+      { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'warning', gain: 0.34 },
     { at: 35, role: 'voice', band: 'mid', source: 'voice', vowel: 'oh', freq: 180, dur: 0.24, gain: 0.036, slide: -18 },
     { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 86, dur: 0.42, wave: 'sawtooth', gain: 0.046, slide: -24 },
       { at: 150, role: 'sparkle', band: 'high', source: 'tone', freq: 980, dur: 0.11, wave: 'square', gain: 0.026 },
     { at: 430, role: 'sparkle', band: 'high', source: 'tone', freq: 740, dur: 0.09, wave: 'square', gain: 0.018 },
   ],
-  suspense: [
-    { at: -360, role: 'riser', band: 'low', source: 'tone', freq: 72, dur: 0.46, wave: 'sawtooth', gain: 0.05, slide: 38 },
+    suspense: [
+      { at: -420, role: 'riser', band: 'mid', source: 'sample', sample: 'suspenseRise', gain: 0.26, rate: 0.82 },
+      { at: -360, role: 'riser', band: 'low', source: 'tone', freq: 72, dur: 0.46, wave: 'sawtooth', gain: 0.05, slide: 38 },
     { at: -240, role: 'riser', band: 'mid', source: 'noise', dur: 0.54, gain: 0.038, filter: 420, filterType: 'bandpass' },
     { at: 0, role: 'impact', band: 'low', source: 'tone', freq: 96, dur: 0.12, wave: 'triangle', gain: 0.038 },
     { at: 150, role: 'tail', band: 'mid', source: 'tone', freq: 144, dur: 0.18, wave: 'sine', gain: 0.026 },
   ],
-  lock: [
+    lock: [
       { at: -40, role: 'riser', band: 'mid', source: 'noise', dur: 0.12, gain: 0.035 },
+      { at: -8, role: 'impact', band: 'mid', source: 'sample', sample: 'lockClack', gain: 0.28, rate: 0.95 },
       { at: 0, role: 'impact', band: 'low', source: 'tone', freq: 118, dur: 0.08, wave: 'square', gain: 0.056 },
       { at: 82, role: 'sub', band: 'low', source: 'tone', freq: 68, dur: 0.2, wave: 'sawtooth', gain: 0.064 },
       { at: 130, role: 'tail', band: 'mid', source: 'sample', sample: 'click', gain: 0.14 },
   ],
-  reveal: [
-    { at: -680, role: 'riser', band: 'mid', source: 'noise', dur: 0.86, gain: 0.045, filter: 620, filterType: 'bandpass' },
-    { at: -420, role: 'riser', band: 'high', source: 'tone', freq: 360, dur: 0.5, wave: 'sawtooth', gain: 0.026, slide: 1560 },
+    reveal: [
+      { at: -680, role: 'riser', band: 'mid', source: 'noise', dur: 0.86, gain: 0.045, filter: 620, filterType: 'bandpass' },
+      { at: -560, role: 'riser', band: 'mid', source: 'sample', sample: 'suspenseRise', gain: 0.24, rate: 0.72 },
+      { at: -420, role: 'riser', band: 'high', source: 'tone', freq: 360, dur: 0.5, wave: 'sawtooth', gain: 0.026, slide: 1560 },
     { at: -90, role: 'impact', band: 'mid', source: 'sample', sample: 'tick', gain: 0.18, rate: 0.72 },
     { at: -55, role: 'voice', band: 'mid', source: 'voice', vowel: 'hey', freq: 260, dur: 0.2, gain: 0.032, slide: 72 },
-    { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 48, dur: 0.62, wave: 'sawtooth', gain: 0.12, slide: -14 },
-    { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.58 },
+      { at: 0, role: 'sub', band: 'low', source: 'tone', freq: 48, dur: 0.62, wave: 'sawtooth', gain: 0.12, slide: -14 },
+      { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.58 },
+      { at: 32, role: 'impact', band: 'mid', source: 'sample', sample: 'rewardPop', gain: 0.3, rate: 1.08 },
     { at: 18, role: 'impact', band: 'mid', source: 'noise', dur: 0.5, gain: 0.09, filter: 900, filterType: 'lowpass' },
     { at: 58, role: 'voice', band: 'mid', source: 'voice', vowel: 'ha', freq: 330, dur: 0.22, gain: 0.038, slide: 96 },
     { at: 82, role: 'sparkle', band: 'high', source: 'tone', freq: 1450, dur: 0.12, wave: 'triangle', gain: 0.044, slide: 720 },
@@ -131,15 +137,18 @@
     { at: 380, role: 'sparkle', band: 'high', source: 'tone', freq: 2850, dur: 0.08, wave: 'sine', gain: 0.022 },
     { at: 610, role: 'tail', band: 'mid', source: 'tone', freq: 760, dur: 0.34, wave: 'sine', gain: 0.022, slide: -260 },
   ],
-  shine: [
+    shine: [
+      { at: -12, role: 'sparkle', band: 'high', source: 'sample', sample: 'shineChime', gain: 0.22, rate: 1.12 },
       { at: 0, role: 'sparkle', band: 'high', source: 'tone', freq: 1500, dur: 0.08, wave: 'sine', gain: 0.024 },
       { at: 70, role: 'sparkle', band: 'high', source: 'tone', freq: 1900, dur: 0.08, wave: 'sine', gain: 0.022 },
       { at: 140, role: 'sparkle', band: 'high', source: 'tone', freq: 2400, dur: 0.08, wave: 'sine', gain: 0.02 },
     { at: 220, role: 'tail', band: 'mid', source: 'tone', freq: 1100, dur: 0.18, wave: 'triangle', gain: 0.014 },
   ],
-  jackpot: [
-    { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.34, rate: 1.18 },
-    { at: 8, role: 'voice', band: 'mid', source: 'voice', vowel: 'wow', freq: 290, dur: 0.34, gain: 0.046, slide: 180 },
+    jackpot: [
+      { at: -30, role: 'impact', band: 'mid', source: 'sample', sample: 'magicHit', gain: 0.24, rate: 0.92 },
+      { at: 0, role: 'impact', band: 'mid', source: 'sample', sample: 'reveal', gain: 0.3, rate: 1.18 },
+      { at: 8, role: 'voice', band: 'mid', source: 'voice', vowel: 'wow', freq: 290, dur: 0.34, gain: 0.046, slide: 180 },
+      { at: 96, role: 'sparkle', band: 'high', source: 'sample', sample: 'jackpotFanfare', gain: 0.28, rate: 1.08 },
     { at: 20, role: 'sparkle', band: 'high', source: 'tone', freq: 1046, dur: 0.13, wave: 'triangle', gain: 0.046 },
     { at: 130, role: 'sparkle', band: 'high', source: 'tone', freq: 1318, dur: 0.13, wave: 'triangle', gain: 0.044 },
     { at: 240, role: 'sparkle', band: 'high', source: 'tone', freq: 1568, dur: 0.16, wave: 'triangle', gain: 0.05 },
@@ -173,7 +182,15 @@
     tick: 'assets/sfx/tick.wav',
     warning: 'assets/sfx/warning.wav',
     reveal: 'assets/sfx/reveal.wav',
+    suspenseRise: 'assets/sfx/suspense-rise.wav',
+    lockClack: 'assets/sfx/lock-clack.wav',
+    rewardPop: 'assets/sfx/reward-pop.wav',
+    magicHit: 'assets/sfx/magic-hit.wav',
+    shineChime: 'assets/sfx/shine-chime.wav',
+    jackpotFanfare: 'assets/sfx/jackpot-fanfare.wav',
   };
+  const SFX_CREDITS = 'Additional game UI SFX: Kenney UI Audio via Calinou/kenney-ui-audio on GitHub, CC0 1.0.';
+  window.__FOOD_HEIST_SFX_CREDITS__ = SFX_CREDITS;
   const $ = (id) => document.getElementById(id);
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   let cursorTimer;
