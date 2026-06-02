@@ -532,11 +532,16 @@
   }
   function drawResult(food) {
     const label = food.rarity === 'SSR' ? 'EXECUTION SSR' : food.rarity === 'SR' ? 'SUPER RARE' : food.rarity === 'R' ? 'RARE' : 'NORMAL';
+    const sideCards = [randomFood(foods), randomFood(foods)];
     $('result').classList.remove('reveal');
     $('result').innerHTML = `<div class="resultBody">
       <div class="resultFx"><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="resultHead"><div class="rarityBig">${label}</div><div style="color:#e60012;font-size:28px">⌖</div></div>
-      <div class="mainFood"><div class="foodArt">${foodArt(food, 132)}</div><div><div class="destiny">TODAY'S DESTINY</div><div class="resultName">${food.name}</div></div></div>
+      <div class="cardSpread">
+        <div class="drawCard sideCard leftCard" data-rarity="${sideCards[0].rarity}"><div class="cardTop">${sideCards[0].rarity}</div><div class="foodArt">${foodArt(sideCards[0], 96)}</div><div class="cardName">${sideCards[0].name}</div></div>
+        <div class="drawCard winnerCard" data-rarity="${food.rarity}"><div class="cardTop">${label}</div><div class="foodArt">${foodArt(food, 132)}</div><div class="destiny">TODAY'S DESTINY</div><div class="resultName">${food.name}</div></div>
+        <div class="drawCard sideCard rightCard" data-rarity="${sideCards[1].rarity}"><div class="cardTop">${sideCards[1].rarity}</div><div class="foodArt">${foodArt(sideCards[1], 96)}</div><div class="cardName">${sideCards[1].name}</div></div>
+      </div>
       <div class="stats"><div class="stat"><small>KCAL</small><b>${food.calories}</b></div><div class="stat"><small>HEALTH</small><b>${food.health}</b></div><div class="stat"><small>控糖</small><b>${food.sugarSafe ? 'OK' : 'NO'}</b></div></div>
     </div>`;
     requestAnimationFrame(() => $('result').classList.add('reveal'));
