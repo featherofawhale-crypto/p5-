@@ -15,6 +15,8 @@ import {
   foodIconPath,
   getSoundCuePlan,
   normalizeFood,
+  randomFood,
+  rarityOdds,
   sanitizeFoodPool,
 } from '../src/core.js';
 
@@ -83,6 +85,34 @@ test('deleteFood keeps at least one option in the pool', () => {
 
   assert.equal(deleteFood(only, 1).length, 1);
   assert.equal(deleteFood([...only, { ...only[0], id: 2, name: '火锅' }], 1).length, 1);
+});
+
+test('rarityOdds reports active blind-box weights', () => {
+  const odds = rarityOdds([
+    { id: 1, name: '普通饭', rarity: 'N' },
+    { id: 2, name: '稀有面', rarity: 'R' },
+    { id: 3, name: '超稀有锅', rarity: 'SR' },
+    { id: 4, name: '终极牛排', rarity: 'SSR' },
+  ]);
+
+  assert.deepEqual(odds.map((item) => [item.rarity, item.percent]), [
+    ['N', 54],
+    ['R', 30],
+    ['SR', 12],
+    ['SSR', 4],
+  ]);
+});
+
+test('randomFood draws by rarity weight before picking within that rarity', () => {
+  const foods = [
+    { id: 1, name: '普通饭', rarity: 'N' },
+    { id: 2, name: '稀有面', rarity: 'R' },
+    { id: 3, name: '超稀有锅', rarity: 'SR' },
+    { id: 4, name: '终极牛排', rarity: 'SSR' },
+  ];
+  const draws = [0.01, 0.55, 0.85, 0.98].map((pick) => randomFood(foods, () => pick).rarity);
+
+  assert.deepEqual(draws, ['N', 'R', 'SR', 'SSR']);
 });
 
 test('foodArt returns low-poly comic svg markup without emoji art', () => {

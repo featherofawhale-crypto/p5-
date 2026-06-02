@@ -9,6 +9,7 @@ import {
   getSoundCuePlan,
   parseFoods,
   randomFood,
+  rarityOdds,
   serializeFoods,
   sanitizeFoodPool,
 } from './core.js';
@@ -318,6 +319,8 @@ async function startRoll() {
 
 function renderAdmin() {
   $('pool').textContent = `POOL ${foods.length}`;
+  $('pool').title = rarityOdds(foods).map((item) => `${item.rarity} ${item.percent}% / ${item.count}个`).join(' · ');
+  $('odds').textContent = rarityOdds(foods).map((item) => `${item.rarity} ${item.percent}%`).join(' · ');
   $('foodList').innerHTML = foods.map((food) => `<div class="foodRow">
     <div><strong>${food.name}</strong><span>${food.rarity} · ${food.calories} kcal · HEALTH ${food.health} · 控糖 ${food.sugarSafe ? 'OK' : 'NO'}</span></div>
     <button data-delete="${food.id}">删除</button>

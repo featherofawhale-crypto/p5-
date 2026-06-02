@@ -37,6 +37,8 @@
   ];
   const FOOD_POOL_NAMES = [...DEFAULT_FOOD_NAMES, ...EXTRA_FOOD_NAMES];
   const RARITIES = new Set(['N', 'R', 'SR', 'SSR']);
+  const RARITY_WEIGHTS = { N: 54, R: 30, SR: 12, SSR: 4 };
+  const RARITY_ORDER = ['N', 'R', 'SR', 'SSR'];
   const HEALTH_PATTERN = /控糖|鸡胸|藜麦|糙米|沙拉|西兰花|蒸|低脂|杂粮|无糖|牛油果|豆腐|鱼|虾仁|蔬菜|时蔬/;
   const COLOR_SETS = [
     ['#f6d365', '#fda085', '#d7263d', '#151515'],
@@ -299,8 +301,27 @@
     if (foods.length <= 1) return foods;
     return foods.filter((food) => food.id !== Number(id));
   }
-  function randomFood(foods) {
-    return foods[Math.floor(Math.random() * foods.length)] ?? foods[0];
+  function randomFood(foods, random = Math.random) {
+    const pool = Array.isArray(foods) ? foods : [];
+    if (!pool.length) return undefined;
+    const groups = RARITY_ORDER
+      .map((rarity) => ({ rarity, items: pool.filter((food) => food.rarity === rarity), weight: RARITY_WEIGHTS[rarity] }))
+      .filter((group) => group.items.length && group.weight > 0);
+    const total = groups.reduce((sum, group) => sum + group.weight, 0);
+    let cursor = random() * total;
+    const group = groups.find((item) => {
+      cursor -= item.weight;
+      return cursor < 0;
+    }) ?? groups.at(-1);
+    return group.items[Math.floor(random() * group.items.length)] ?? pool[0];
+  }
+  function rarityOdds(foods) {
+    const pool = Array.isArray(foods) ? foods : [];
+    const available = RARITY_ORDER
+      .map((rarity) => ({ rarity, count: pool.filter((food) => food.rarity === rarity).length, weight: RARITY_WEIGHTS[rarity] }))
+      .filter((item) => item.count > 0 && item.weight > 0);
+    const total = available.reduce((sum, item) => sum + item.weight, 0) || 1;
+    return available.map((item) => ({ ...item, percent: Number(((item.weight / total) * 100).toFixed(1)) }));
   }
   function parseJsonObject(text, fallback = {}) {
     if (!String(text ?? '').trim()) return fallback;
@@ -653,6 +674,8 @@
   }
   function renderAdmin() {
     $('pool').textContent = `POOL ${foods.length}`;
+    $('pool').title = rarityOdds(foods).map((item) => `${item.rarity} ${item.percent}% / ${item.count}个`).join(' · ');
+    $('odds').textContent = rarityOdds(foods).map((item) => `${item.rarity} ${item.percent}%`).join(' · ');
     $('foodList').innerHTML = foods.map((food) => `<div class="foodRow">
       <div><strong>${food.name}</strong><span>${food.rarity} · ${food.calories} kcal · HEALTH ${food.health} · 控糖 ${food.sugarSafe ? 'OK' : 'NO'}</span></div>
       <button data-delete="${food.id}">删除</button>
