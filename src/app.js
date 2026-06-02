@@ -42,6 +42,14 @@ const SFX_ASSETS = {
 const $ = (id) => document.getElementById(id);
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+function pinViewport() {
+  window.scrollTo(0, 0);
+  document.querySelector('.screen')?.scrollTo(0, 0);
+}
+
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+pinViewport();
+
 let foods = loadFoods();
 let rarityWeights = loadRarityWeights();
 let drawHistory = loadDrawHistory();
@@ -272,9 +280,10 @@ function drawResult(food) {
   const label = food.rarity === 'SSR' ? 'EXECUTION SSR' : food.rarity === 'SR' ? 'SUPER RARE' : food.rarity === 'R' ? 'RARE' : 'NORMAL';
   const sideCards = [pickFood(), pickFood()];
   $('result').classList.remove('reveal');
+  $('result').dataset.rarity = food.rarity;
   $('result').innerHTML = `<div class="resultBody">
     <div class="resultFx"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <div class="resultHead"><div class="rarityBig">${label}</div><div style="color:#e60012;font-size:28px">⌖</div></div>
+    <div class="resultHead"><div class="rarityBig">${label}</div><div class="raritySignal">${food.rarity}</div></div>
     <div class="cardSpread">
       <div class="drawCard sideCard leftCard" data-rarity="${sideCards[0].rarity}"><div class="cardTop">${sideCards[0].rarity}</div><div class="foodArt">${foodArt(sideCards[0], 96)}</div><div class="cardName">${sideCards[0].name}</div></div>
       <div class="drawCard winnerCard" data-rarity="${food.rarity}"><div class="cardTop">${label}</div><div class="foodArt">${foodArt(food, 132)}</div><div class="destiny">TODAY'S DESTINY</div><div class="resultName">${food.name}</div></div>
@@ -304,6 +313,7 @@ function cut(type, food) {
 
 async function startRoll() {
   if (spinning) return;
+  pinViewport();
   audioCtx();
   bgm.play().catch(() => {});
   spinning = true;
@@ -351,6 +361,7 @@ async function startRoll() {
   $('flash').classList.remove('go');
   $('flash').classList.add('burst');
   drawResult(final);
+  pinViewport();
   recordDraw(final);
   renderHistory();
   setPhase("TODAY'S DESTINY");
@@ -363,6 +374,7 @@ async function startRoll() {
   document.querySelectorAll('.reel').forEach((node) => node.classList.remove('spin', 'locked'));
   $('rollBtn').disabled = false;
   $('rollBtn').textContent = '开始处决';
+  pinViewport();
   spinning = false;
 }
 
