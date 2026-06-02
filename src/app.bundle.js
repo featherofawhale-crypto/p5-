@@ -683,8 +683,8 @@
     $('result').innerHTML = `<div class="resultBody">
     <div class="resultFx"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="resultHead"><div class="rarityBig">${label}</div><div class="raritySignal">${food.rarity}</div></div>
-    <div class="cardSpread">
-      <div class="drawCard winnerCard" data-rarity="${food.rarity}" data-name-size="${nameSize}"><div class="cardTop">${label}</div><div class="winnerIcon">${foodArt(food, 132)}</div><div class="resultCopy"><div class="destiny">TODAY'S DESTINY</div><div class="resultName">${food.name}</div></div></div>
+    <div class="resultStage">
+      <div class="drawCard winnerCard" data-rarity="${food.rarity}" data-name-size="${nameSize}"><div class="cardTop">${label}</div><div class="winnerIcon" data-food-icon="${food.name}">${foodArt(food, 132)}</div><div class="resultCopy"><div class="destiny">TODAY'S DESTINY</div><div class="resultName">${food.name}</div></div></div>
     </div>
       <div class="stats"><div class="stat"><small>KCAL</small><b>${food.calories}</b></div><div class="stat"><small>HEALTH</small><b>${food.health}</b></div><div class="stat"><small>控糖</small><b>${food.sugarSafe ? 'OK' : 'NO'}</b></div></div>
     </div>`;
@@ -703,7 +703,7 @@
     if (type === 'slash') cutin.innerHTML = '<div class="cutSlashA"></div><div class="cutSlashB"></div>';
     if (type === 'manga') cutin.innerHTML = '<div class="manga">' + ['TARGET', 'MENU', 'CALORIE', 'DESTINY'].map((x, i) => `<div class="panel" style="animation-delay:${i * 0.1}s">${x}</div>`).join('') + '</div>';
     if (type === 'warning') cutin.innerHTML = '<div class="black"></div><div class="redFlash"></div><div class="warningBox"><div class="warningText">WARNING</div><div class="warningSub">RARE DESTINY DETECTED</div></div>';
-    if (type === 'execute') cutin.innerHTML = `<div class="execute">EXECUTE<br><span class="executeSub">${food.name}</span></div>`;
+    if (type === 'execute') cutin.innerHTML = `<div class="execute"><span>EXECUTE</span><b>${food.name}</b></div>`;
   }
   async function startRoll() {
     if (spinning) return;
@@ -744,8 +744,9 @@
     await delay(1300);
     setPhase('FINAL JUDGEMENT');
     clearInterval(inter);
-    cut('execute', final);
     drawReels([pickFood(), final, pickFood()]);
+    drawResult(final, { animate: false });
+    cut('execute', final);
     document.querySelectorAll('.reel').forEach((node) => node.classList.add('locked'));
     sfx.lock();
     await delay(380);
