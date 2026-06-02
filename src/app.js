@@ -291,9 +291,10 @@ function drawReels(items) {
   });
 }
 
-function drawResult(food) {
+function drawResult(food, options = {}) {
   const label = food.rarity === 'SSR' ? 'EXECUTION SSR' : food.rarity === 'SR' ? 'SUPER RARE' : food.rarity === 'R' ? 'RARE' : 'NORMAL';
   const nameSize = food.name.length >= 7 ? 'compact' : food.name.length >= 5 ? 'long' : 'normal';
+  const animate = options.animate !== false;
   $('result').classList.remove('reveal');
   $('result').dataset.rarity = food.rarity;
   $('result').innerHTML = `<div class="resultBody">
@@ -304,7 +305,7 @@ function drawResult(food) {
     </div>
     <div class="stats"><div class="stat"><small>KCAL</small><b>${food.calories}</b></div><div class="stat"><small>HEALTH</small><b>${food.health}</b></div><div class="stat"><small>控糖</small><b>${food.sugarSafe ? 'OK' : 'NO'}</b></div></div>
   </div>`;
-  requestAnimationFrame(() => $('result').classList.add('reveal'));
+  if (animate) requestAnimationFrame(() => $('result').classList.add('reveal'));
 }
 
 function setPhase(text) {
@@ -470,7 +471,7 @@ async function generateFoodsFromApi(mode) {
     saveFoods();
     renderAdmin();
     drawReels([pickFood(), pickFood(), pickFood()]);
-    drawResult(foods[0]);
+    drawResult(foods[0], { animate: false });
     $('apiStatus').textContent = `已生成 ${generated.length} 个食物，使用预设：${request.preset.name}`;
   } catch (error) {
     $('apiStatus').textContent = `生成失败：${error.message}`;
@@ -557,7 +558,7 @@ function wireEvents() {
     saveFoods();
     renderAdmin();
     drawReels([pickFood(), pickFood(), pickFood()]);
-    drawResult(foods[0]);
+    drawResult(foods[0], { animate: false });
   });
   $('saveOddsBtn').addEventListener('click', () => {
     rarityWeights = normalizeRarityWeights({
@@ -595,5 +596,5 @@ renderOddsForm();
 renderAdmin();
 renderHistory();
 drawReels([foods[20], foods[43], foods[8]]);
-drawResult(foods[0]);
+drawResult(foods[0], { animate: false });
 hideCursorSoon();
