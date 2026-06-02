@@ -137,12 +137,12 @@ test('custom rarity weights can force a selected rarity', () => {
   assert.deepEqual(normalizeRarityWeights({ N: 0, R: 0, SR: 0, SSR: 0 }), { N: 54, R: 30, SR: 12, SSR: 4 });
 });
 
-test('foodArt returns low-poly comic svg markup without emoji art', () => {
+test('foodArt returns clean comic svg markup without emoji art overlays', () => {
   const art = foodArt({ id: 8, name: '麻辣香锅', rarity: 'SSR', calories: 800, health: 45, sugarSafe: false });
 
   assert.match(art, /<svg/);
   assert.match(art, /<image/);
-  assert.match(art, /class="foodFacet"/);
+  assert.doesNotMatch(art, /class="foodFacet"/);
   assert.match(art, /assets\/food\/openmoji\//);
   assert.doesNotMatch(art, /🍜|🥘|🍚|🥟|🍲|🥗|🍛|🔥|🥢|🍖|🦀|🍗/);
 });

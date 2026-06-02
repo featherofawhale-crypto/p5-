@@ -504,10 +504,6 @@ export function foodArt(food, size = 160) {
       <rect x="25" y="36" width="110" height="96" rx="10" fill="${plate}" stroke="#111" stroke-width="5"/>
       <g filter="url(#ink${food.id})" clip-path="url(#dishClip${food.id})">
         <image href="${foodIconPath(kind)}" x="36" y="42" width="88" height="88" preserveAspectRatio="xMidYMid meet"/>
-        <polygon class="foodFacet" points="33,42 75,42 58,78 34,88" fill="${colors[0]}" opacity=".22"/>
-        <polygon class="foodFacet" points="76,41 130,39 112,80 58,78" fill="${colors[1]}" opacity=".2"/>
-        <polygon class="foodFacet" points="35,88 76,79 72,130 29,109" fill="#ffffff" opacity=".25"/>
-        <polygon class="foodFacet" points="78,80 132,118 72,130" fill="${colors[2]}" opacity=".18"/>
       </g>
       <circle cx="118" cy="42" r="13" fill="${rareStroke}" stroke="#111" stroke-width="4"/>
       <text x="80" y="140" text-anchor="middle" font-size="12" font-weight="900" fill="#111">${kind.toUpperCase()}</text>
