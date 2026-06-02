@@ -460,6 +460,25 @@ function cut(type, food) {
   if (type === 'execute') cutin.innerHTML = '<div class="execute"><span>EXECUTE</span><b>SEALED DESTINY</b></div>';
 }
 
+function firePrizeConfetti(food) {
+  const confetti = window.confetti;
+  if (typeof confetti !== 'function') return;
+  const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const rarityPower = { N: 72, R: 108, SR: 156, SSR: 220 }[food.rarity] || 92;
+  const particleCount = reduced ? Math.round(rarityPower * 0.38) : rarityPower;
+  const scalar = food.rarity === 'SSR' ? 1.28 : food.rarity === 'SR' ? 1.12 : 0.96;
+  const originY = window.innerWidth <= 430 ? 0.58 : 0.48;
+  const colors = ['#fff', '#ffd60a', '#e60012', '#7bdff2', '#111'];
+  document.documentElement.dataset.prizeConfetti = `${food.rarity}:${particleCount}`;
+
+  confetti({ particleCount: Math.round(particleCount * 0.34), spread: 62, startVelocity: 44, scalar, origin: { x: 0.5, y: originY }, colors });
+  setTimeout(() => confetti({ particleCount: Math.round(particleCount * 0.22), angle: 58, spread: 54, startVelocity: 38, scalar, origin: { x: 0.05, y: originY + 0.08 }, colors }), 90);
+  setTimeout(() => confetti({ particleCount: Math.round(particleCount * 0.22), angle: 122, spread: 54, startVelocity: 38, scalar, origin: { x: 0.95, y: originY + 0.08 }, colors }), 170);
+  if (!reduced && (food.rarity === 'SR' || food.rarity === 'SSR')) {
+    setTimeout(() => confetti({ particleCount: Math.round(particleCount * 0.2), spread: 100, startVelocity: 26, ticks: 150, scalar: scalar * 0.9, origin: { x: 0.5, y: 0.18 }, colors }), 420);
+  }
+}
+
 async function startRoll() {
   if (spinning) return;
   pinViewport();
@@ -513,6 +532,7 @@ async function startRoll() {
   $('flash').classList.add('burst');
   drawReels([pickFood(), final, pickFood()]);
   drawResult(final);
+  firePrizeConfetti(final);
   pinViewport();
   recordDraw(final);
   renderHistory();

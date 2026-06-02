@@ -1,10 +1,13 @@
 {
   "name": "p5-lottery-blind-box",
-  "version": "0.4.45",
+  "version": "0.4.46",
   "type": "module",
   "private": true,
   "scripts": {
     "start": "py -m http.server 5173",
     "test": "node --test"
+  },
+  "dependencies": {
+    "canvas-confetti": "^1.9.3"
   }
 }
