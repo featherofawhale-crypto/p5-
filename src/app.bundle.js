@@ -1178,6 +1178,6 @@
   renderAdmin();
   renderHistory();
   drawReels([pickFood(), pickFood(), pickFood()]);
-  drawResult(foods[0], { animate: false });
+  drawResult(foods[0], { animate: false, concealed: true });
   hideCursorSoon();
 }());
