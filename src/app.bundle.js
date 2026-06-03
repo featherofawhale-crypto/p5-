@@ -519,6 +519,7 @@
   let bgmFadeToken = 0;
   let bgmDuckTimer;
   let audioUnlocked = false;
+  let bgmStartPromise = null;
   const sampleCache = new Map();
   const bgm = $('bgm');
   bgm.volume = 0.18;
@@ -653,24 +654,37 @@
     localStorage.setItem(API_CONFIG_KEY, JSON.stringify(config));
   }
   function unlockAudio() {
-    if (muted) return;
+    startBgmPlayback();
+  }
+  function startBgmPlayback() {
+    if (muted) return Promise.resolve();
     audioCtx();
     preloadSamples();
+    if (!bgm.paused && !bgm.ended) {
+      audioUnlocked = true;
+      document.documentElement.dataset.audioUnlocked = 'true';
+      delete document.documentElement.dataset.audioError;
+      return Promise.resolve();
+    }
+    if (bgmStartPromise) return bgmStartPromise;
     setBgmVolume(userBgmVolume());
-    bgm.play().then(() => {
+    bgmStartPromise = bgm.play().then(() => {
       audioUnlocked = true;
       document.documentElement.dataset.audioUnlocked = 'true';
       delete document.documentElement.dataset.audioError;
     }).catch((error) => {
       document.documentElement.dataset.audioUnlocked = 'false';
       document.documentElement.dataset.audioError = error?.name || 'play-blocked';
+    }).finally(() => {
+      bgmStartPromise = null;
     });
+    return bgmStartPromise;
   }
   function kickBgmNow() {
     if (muted) return;
     ++bgmFadeToken;
     setBgmVolume(userBgmVolume());
-    bgm.play().catch(() => unlockAudio());
+    startBgmPlayback();
   }
   function audioCtx() {
     if (!ctx) {
