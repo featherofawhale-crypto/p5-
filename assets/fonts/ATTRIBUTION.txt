@@ -1,0 +1,9 @@
+Bundled web fonts:
+
+- Bangers Regular
+  Source: Google Fonts
+  License: SIL Open Font License 1.1
+
+- ZCOOL KuaiLe Regular
+  Source: Google Fonts
+  License: SIL Open Font License 1.1
