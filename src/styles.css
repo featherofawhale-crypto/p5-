@@ -1,6 +1,4 @@
-@font-face{font-family:P5Latin;src:url("../assets/fonts/Bangers-Regular.ttf") format("truetype");font-weight:900;font-style:normal;font-display:block}
-@font-face{font-family:P5Han;src:url("../assets/fonts/ZCOOLKuaiLe-Regular.ttf") format("truetype");font-weight:900;font-style:normal;font-display:block}
-:root{color-scheme:only light;--font-display:P5Latin,P5Han,"Arial Black","Microsoft YaHei",sans-serif;--font-mono:Consolas,"Courier New",monospace}
+:root{color-scheme:only light;--font-display:Impact,"Arial Black","PingFang SC","Microsoft YaHei",sans-serif;--font-mono:Consolas,"Courier New",monospace}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;background:#060606;color:#fff;font-family:var(--font-display);color-scheme:only light;-webkit-text-size-adjust:100%;text-size-adjust:100%;forced-color-adjust:none}
 html::-webkit-scrollbar,body::-webkit-scrollbar{width:0;height:0}
